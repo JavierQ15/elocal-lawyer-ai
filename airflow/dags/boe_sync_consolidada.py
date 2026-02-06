@@ -282,8 +282,10 @@ def sync_bloques_batch(**context):
                     # Ya existe, skip
                     continue
                 
-                # Calcular vigencia_hasta (será NULL por ahora, se actualiza en refresh)
-                vigencia_hasta = None  # TODO: Calcular con lógica de siguiente versión
+                # Calcular vigencia_hasta
+                # NOTE: vigencia_hasta is calculated later in refresh_vigente_collection task
+                # This field will be set to the fecha_vigencia_desde of the next version
+                vigencia_hasta = None
                 
                 # Upsert versión
                 cursor.execute("""

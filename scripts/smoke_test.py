@@ -297,8 +297,26 @@ def generate_embeddings_manually(fragmento_ids):
     cursor = conn.cursor()
     
     # Import embedding utilities
-    sys.path.insert(0, '/home/runner/work/elocal-lawyer-ai/elocal-lawyer-ai/airflow/dags')
-    from utils.embeddings import generate_embeddings, upsert_point, QDRANT_COLLECTION_VIG, ensure_collections_exist
+    # Use relative import for better portability
+    import importlib.util
+    import os
+    
+    utils_path = os.path.join(
+        os.path.dirname(__file__), 
+        '..', 
+        'airflow', 
+        'dags', 
+        'utils', 
+        'embeddings.py'
+    )
+    spec = importlib.util.spec_from_file_location("embeddings_utils", utils_path)
+    embeddings_module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(embeddings_module)
+    
+    generate_embeddings = embeddings_module.generate_embeddings
+    upsert_point = embeddings_module.upsert_point
+    QDRANT_COLLECTION_VIG = embeddings_module.QDRANT_COLLECTION_VIG
+    ensure_collections_exist = embeddings_module.ensure_collections_exist
     
     # Ensure collections exist
     ensure_collections_exist()

@@ -163,9 +163,11 @@ Este es el contenido del segundo artículo.
         self.assertGreater(len(chunks), 1)
         
         # All chunks should be roughly the target size
+        # Formula: target_tokens * 4 chars/token * 1.5 buffer * 2 for overlap
+        MAX_CHUNK_SIZE = 50 * 4 * 1.5 * 2  # = 600 chars
+        
         for chunk in chunks:
-            # Approximate: 4 chars = 1 token, so 50 tokens ~ 200 chars
-            self.assertLess(len(chunk['text']), 800)  # 200 * 1.5 * 2 for overlap
+            self.assertLess(len(chunk['text']), MAX_CHUNK_SIZE)
 
 
 class TestBOEConsolidadaClient(unittest.TestCase):

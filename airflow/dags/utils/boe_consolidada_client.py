@@ -363,7 +363,7 @@ class BOEConsolidadaClient:
         except (ValueError, TypeError):
             try:
                 return datetime.fromisoformat(date_str).date()
-            except:
+            except Exception:
                 return None
     
     def _parse_datetime(self, dt_str: Optional[str]) -> Optional[datetime]:
@@ -372,10 +372,10 @@ class BOEConsolidadaClient:
             return None
         try:
             return datetime.fromisoformat(dt_str)
-        except:
+        except Exception:
             try:
                 return datetime.strptime(dt_str, '%Y-%m-%d %H:%M:%S')
-            except:
+            except Exception:
                 return None
 
 
