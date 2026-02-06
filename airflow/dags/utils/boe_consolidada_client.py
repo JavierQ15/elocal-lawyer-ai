@@ -334,25 +334,51 @@ class BOEConsolidadaClient:
         return normas
     
     def _parse_indice_json(self, data: Dict) -> Dict[str, Any]:
-        """Parse JSON response from get_indice."""
-        # TODO: Adapt to real BOE API JSON structure
+        """Parse JSON response from get_indice.
+        
+        Real API may return:
+        1. {"status": {...}, "data": {...}} - single object
+        2. {"status": {...}, "data": [{...}]} - array with single object
+        3. {"bloques": [...]} - legacy direct format
+        """
         bloques = []
         
-        for bloque_item in data.get('bloques', []) or data.get('estructura', []):
-            bloque = {
-                'id_bloque': bloque_item.get('id') or bloque_item.get('identificador'),
-                'tipo': bloque_item.get('tipo'),
-                'titulo_bloque': bloque_item.get('titulo'),
-                'fecha_actualizacion_bloque': self._parse_datetime(
-                    bloque_item.get('fecha_actualizacion')
-                ),
-                'url_bloque': bloque_item.get('url')
-            }
-            bloques.append(bloque)
+        # Extract the actual data from response
+        actual_data = data
+        if 'data' in data:
+            data_content = data['data']
+            # Handle data as list or single object
+            if isinstance(data_content, list) and len(data_content) > 0:
+                actual_data = data_content[0]
+            elif isinstance(data_content, dict):
+                actual_data = data_content
+        
+        # Extract bloques array
+        bloques_list = actual_data.get('bloques', []) or actual_data.get('estructura', [])
+        
+        for bloque_item in bloques_list:
+            try:
+                bloque = {
+                    'id_bloque': bloque_item.get('id') or bloque_item.get('identificador'),
+                    'tipo': bloque_item.get('tipo'),
+                    'titulo_bloque': bloque_item.get('titulo'),
+                    'fecha_actualizacion_bloque': self._parse_datetime(
+                        bloque_item.get('fecha_actualizacion')
+                    ),
+                    'url_bloque': bloque_item.get('url')
+                }
+                # Only add if we have an id_bloque
+                if bloque['id_bloque']:
+                    bloques.append(bloque)
+                else:
+                    logger.warning(f"Skipping bloque without id: {bloque_item}")
+            except Exception as e:
+                logger.error(f"Error parsing bloque item: {e}, item: {bloque_item}")
+                continue
         
         return {
-            'id_norma': data.get('id_norma') or data.get('identificador'),
-            'titulo': data.get('titulo'),
+            'id_norma': actual_data.get('id_norma') or actual_data.get('identificador'),
+            'titulo': actual_data.get('titulo'),
             'metadata': data,
             'bloques': bloques
         }
@@ -390,28 +416,54 @@ class BOEConsolidadaClient:
             return {'bloques': []}
     
     def _parse_bloque_json(self, data: Dict) -> Dict[str, Any]:
-        """Parse JSON response from get_bloque."""
-        # TODO: Adapt to real BOE API JSON structure
+        """Parse JSON response from get_bloque.
+        
+        Real API may return:
+        1. {"status": {...}, "data": {...}} - single object
+        2. {"status": {...}, "data": [{...}]} - array with single object
+        3. {"versiones": [...]} - legacy direct format
+        """
         versiones = []
         
-        for version_item in data.get('versiones', []):
-            version = {
-                'id_norma_modificadora': version_item.get('id_norma_modificadora'),
-                'fecha_publicacion_mod': self._parse_date(
-                    version_item.get('fecha_publicacion_mod')
-                ),
-                'fecha_vigencia_desde': self._parse_date(
-                    version_item.get('fecha_vigencia_desde')
-                ),
-                'html': version_item.get('contenido_html') or version_item.get('html')
-            }
-            versiones.append(version)
+        # Extract the actual data from response
+        actual_data = data
+        if 'data' in data:
+            data_content = data['data']
+            # Handle data as list or single object
+            if isinstance(data_content, list) and len(data_content) > 0:
+                actual_data = data_content[0]
+            elif isinstance(data_content, dict):
+                actual_data = data_content
+        
+        # Extract versiones array
+        versiones_list = actual_data.get('versiones', [])
+        
+        for version_item in versiones_list:
+            try:
+                version = {
+                    'id_norma_modificadora': version_item.get('id_norma_modificadora'),
+                    'fecha_publicacion_mod': self._parse_date(
+                        version_item.get('fecha_publicacion_mod') or version_item.get('fecha_publicacion')
+                    ),
+                    'fecha_vigencia_desde': self._parse_date(
+                        version_item.get('fecha_vigencia_desde') or version_item.get('fecha_vigencia')
+                    ),
+                    'html': version_item.get('contenido_html') or version_item.get('html') or version_item.get('texto')
+                }
+                # Only add versions with content
+                if version['html']:
+                    versiones.append(version)
+                else:
+                    logger.warning(f"Skipping version without content: {version_item.get('id_norma_modificadora')}")
+            except Exception as e:
+                logger.error(f"Error parsing version item: {e}, item: {version_item}")
+                continue
         
         return {
-            'id_norma': data.get('id_norma'),
-            'id_bloque': data.get('id_bloque'),
-            'tipo': data.get('tipo'),
-            'titulo': data.get('titulo'),
+            'id_norma': actual_data.get('id_norma') or actual_data.get('identificador'),
+            'id_bloque': actual_data.get('id_bloque') or actual_data.get('identificador_bloque'),
+            'tipo': actual_data.get('tipo'),
+            'titulo': actual_data.get('titulo'),
             'versiones': versiones
         }
     

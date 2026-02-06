@@ -109,6 +109,34 @@ def main():
                 bloques = indice.get('bloques', [])
                 print(f"✓ get_indice succeeded")
                 print(f"  Found {len(bloques)} bloques")
+                
+                if bloques:
+                    print(f"\n  Sample bloques (first 3):")
+                    for i, bloque in enumerate(bloques[:3]):
+                        print(f"    {i+1}. {bloque.get('id_bloque', 'N/A')} - {bloque.get('tipo', 'N/A')}: {bloque.get('titulo_bloque', 'N/A')[:50]}...")
+                
+                # Test get_bloque if we have bloques
+                if bloques and len(bloques) > 0:
+                    test_bloque_id = bloques[0]['id_bloque']
+                    print(f"\n  Testing get_bloque for {test_id}/{test_bloque_id}...")
+                    try:
+                        bloque_data = client.get_bloque(test_id, test_bloque_id)
+                        if 'error' in bloque_data:
+                            print(f"  ⚠ get_bloque returned error: {bloque_data['error']}")
+                        else:
+                            versiones = bloque_data.get('versiones', [])
+                            print(f"  ✓ get_bloque succeeded")
+                            print(f"    Found {len(versiones)} versiones")
+                            
+                            if versiones:
+                                print(f"\n    Version details:")
+                                for i, version in enumerate(versiones[:3]):
+                                    print(f"      {i+1}. Modificadora: {version.get('id_norma_modificadora', 'N/A')}")
+                                    print(f"         Vigencia desde: {version.get('fecha_vigencia_desde', 'N/A')}")
+                                    html_preview = (version.get('html', '') or '')[:80]
+                                    print(f"         HTML preview: {html_preview}...")
+                    except Exception as e:
+                        print(f"  ⚠ get_bloque failed: {e}")
         except Exception as e:
             print(f"⚠ get_indice failed: {e}")
             print(f"  This is expected if the endpoint doesn't exist yet")
