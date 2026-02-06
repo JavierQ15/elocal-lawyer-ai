@@ -113,7 +113,8 @@ def main():
                 if bloques:
                     print(f"\n  Sample bloques (first 3):")
                     for i, bloque in enumerate(bloques[:3]):
-                        print(f"    {i+1}. {bloque.get('id_bloque', 'N/A')} - {bloque.get('tipo', 'N/A')}: {bloque.get('titulo_bloque', 'N/A')[:50]}...")
+                        titulo_preview = (bloque.get('titulo_bloque') or 'N/A')[:50]
+                        print(f"    {i+1}. {bloque.get('id_bloque', 'N/A')} - {bloque.get('tipo', 'N/A')}: {titulo_preview}...")
                 
                 # Test get_bloque if we have bloques
                 if bloques and len(bloques) > 0:
@@ -133,7 +134,7 @@ def main():
                                 for i, version in enumerate(versiones[:3]):
                                     print(f"      {i+1}. Modificadora: {version.get('id_norma_modificadora', 'N/A')}")
                                     print(f"         Vigencia desde: {version.get('fecha_vigencia_desde', 'N/A')}")
-                                    html_preview = (version.get('html', '') or '')[:80]
+                                    html_preview = version.get('html', '')[:80]
                                     print(f"         HTML preview: {html_preview}...")
                     except Exception as e:
                         print(f"  ⚠ get_bloque failed: {e}")
