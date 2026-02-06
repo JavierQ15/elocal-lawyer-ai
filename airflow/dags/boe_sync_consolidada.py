@@ -78,6 +78,12 @@ def discover_normas(**context):
     
     for norma in normas:
         try:
+            # Skip normas without valid id_norma
+            id_norma = norma.get('id_norma')
+            if not id_norma:
+                logger.warning(f"Skipping norma without id_norma: {norma.get('titulo', 'Unknown')}")
+                continue
+            
             cursor.execute("""
                 INSERT INTO boe_norma (
                     id_norma, titulo, rango, departamento, ambito,
@@ -97,7 +103,7 @@ def discover_normas(**context):
                     metadata_jsonb = EXCLUDED.metadata_jsonb,
                     last_seen_at = CURRENT_TIMESTAMP
             """, (
-                norma.get('id_norma'),
+                id_norma,
                 norma.get('titulo'),
                 norma.get('rango'),
                 norma.get('departamento'),
@@ -110,7 +116,7 @@ def discover_normas(**context):
                 json.dumps(norma.get('metadata', {}))
             ))
             
-            id_normas_to_process.append(norma.get('id_norma'))
+            id_normas_to_process.append(id_norma)
         except Exception as e:
             logger.error(f"Error upserting norma {norma.get('id_norma')}: {e}")
     
@@ -157,8 +163,24 @@ def sync_indices(**context):
             logger.info(f"Fetching indice for {id_norma}")
             indice = client.get_indice(id_norma)
             
-            for bloque in indice.get('bloques', []):
+            # Check for errors in response
+            if 'error' in indice:
+                logger.warning(f"Failed to get indice for {id_norma}: {indice['error']}")
+                continue
+            
+            bloques = indice.get('bloques', [])
+            if not bloques:
+                logger.warning(f"No bloques found for {id_norma}")
+                continue
+            
+            logger.info(f"Processing {len(bloques)} bloques for {id_norma}")
+            
+            for bloque in bloques:
                 id_bloque = bloque.get('id_bloque')
+                if not id_bloque:
+                    logger.warning(f"Skipping bloque without id_bloque in {id_norma}")
+                    continue
+                
                 fecha_actualizacion_bloque = bloque.get('fecha_actualizacion_bloque')
                 
                 # Verificar si el bloque cambió

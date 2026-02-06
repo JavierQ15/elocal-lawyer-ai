@@ -184,12 +184,16 @@ class TestBOEConsolidadaClient(unittest.TestCase):
         self.assertTrue(hasattr(client, 'get_bloque'))
     
     def test_parse_date(self):
-        """Test date parsing."""
+        """Test date parsing with multiple formats."""
         from utils.boe_consolidada_client import BOEConsolidadaClient
         
         client = BOEConsolidadaClient()
         
-        # Test valid date
+        # Test YYYYMMDD format (BOE format)
+        parsed = client._parse_date('20240115')
+        self.assertEqual(parsed, date(2024, 1, 15))
+        
+        # Test YYYY-MM-DD format (ISO)
         parsed = client._parse_date('2024-01-15')
         self.assertEqual(parsed, date(2024, 1, 15))
         
@@ -199,6 +203,29 @@ class TestBOEConsolidadaClient(unittest.TestCase):
         
         # Test invalid date
         parsed = client._parse_date('invalid')
+        self.assertIsNone(parsed)
+    
+    def test_parse_datetime(self):
+        """Test datetime parsing with multiple formats."""
+        from utils.boe_consolidada_client import BOEConsolidadaClient
+        from datetime import datetime
+        
+        client = BOEConsolidadaClient()
+        
+        # Test YYYYMMDDTHHMMSSZ format (BOE format)
+        parsed = client._parse_datetime('20240115T120000Z')
+        self.assertEqual(parsed, datetime(2024, 1, 15, 12, 0, 0))
+        
+        # Test ISO format
+        parsed = client._parse_datetime('2024-01-15T12:00:00')
+        self.assertEqual(parsed, datetime(2024, 1, 15, 12, 0, 0))
+        
+        # Test None
+        parsed = client._parse_datetime(None)
+        self.assertIsNone(parsed)
+        
+        # Test invalid datetime
+        parsed = client._parse_datetime('invalid')
         self.assertIsNone(parsed)
 
 
