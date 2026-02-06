@@ -199,11 +199,9 @@ def sync_indices(**context):
                 else:
                     # Bloque actualizado - handle None comparison properly
                     db_fecha = row[0]
-                    # Mark as dirty if dates differ, handling None cases
+                    # Mark as dirty if dates differ (including when one is None and other isn't)
                     if db_fecha != fecha_actualizacion_bloque:
-                        # Both None means no change, otherwise it's a change
-                        if not (db_fecha is None and fecha_actualizacion_bloque is None):
-                            is_dirty = True
+                        is_dirty = True
                 
                 # Upsert bloque
                 cursor.execute("""

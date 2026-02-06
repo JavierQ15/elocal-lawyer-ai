@@ -362,9 +362,14 @@ class BOEConsolidadaClient:
                 actual_data = data_content
         
         # Extract bloques array - try multiple possible keys
-        bloques_list = (actual_data.get('bloques') or 
-                       actual_data.get('estructura') or 
-                       actual_data.get('indice') or [])
+        # Check for None explicitly to allow empty lists to be returned
+        bloques_list = actual_data.get('bloques')
+        if bloques_list is None:
+            bloques_list = actual_data.get('estructura')
+        if bloques_list is None:
+            bloques_list = actual_data.get('indice')
+        if bloques_list is None:
+            bloques_list = []
         
         # If actual_data is a list itself, treat it as bloques list
         if not bloques_list and isinstance(actual_data, list):
@@ -457,9 +462,14 @@ class BOEConsolidadaClient:
                 actual_data = data_content
         
         # Extract versiones array - try multiple possible keys
-        versiones_list = (actual_data.get('versiones') or 
-                         actual_data.get('historico') or 
-                         actual_data.get('versions') or [])
+        # Check for None explicitly to allow empty lists to be returned
+        versiones_list = actual_data.get('versiones')
+        if versiones_list is None:
+            versiones_list = actual_data.get('historico')
+        if versiones_list is None:
+            versiones_list = actual_data.get('versions')
+        if versiones_list is None:
+            versiones_list = []
         
         # If actual_data is a list itself, treat it as versiones list
         if not versiones_list and isinstance(actual_data, list):

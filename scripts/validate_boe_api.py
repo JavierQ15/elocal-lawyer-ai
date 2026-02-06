@@ -199,8 +199,8 @@ Examples:
         bloques = test_get_indice(client, test_norma_id)
     
     # Test 3: get_bloque (if bloque provided or use first from list)
-    if args.norma and args.bloque:
-        test_get_bloque(client, args.norma, args.bloque)
+    if test_norma_id and args.bloque:
+        test_get_bloque(client, test_norma_id, args.bloque)
     elif test_norma_id and bloques and len(bloques) > 0:
         # Optionally test first bloque
         test_bloque_id = bloques[0].get('id_bloque')
