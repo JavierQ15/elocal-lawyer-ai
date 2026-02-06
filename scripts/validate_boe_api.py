@@ -86,7 +86,7 @@ def main():
         print("-" * 70)
         sample = normas[0]
         print(f"  ID:          {sample.get('id_norma', 'N/A')}")
-        print(f"  Título:      {sample.get('titulo', 'N/A')[:60]}...")
+        print(f"  Título:      {(sample.get('titulo') or 'N/A')[:60]}...")
         print(f"  Rango:       {sample.get('rango', 'N/A')}")
         print(f"  Departamento: {sample.get('departamento', 'N/A')}")
         print(f"  Ámbito:      {sample.get('ambito', 'N/A')}")

@@ -17,6 +17,9 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# BOE date format constants
+BOE_DATE_FORMAT_LENGTH = 8  # YYYYMMDD format
+
 BOE_CONSOLIDADA_BASE_URL = os.getenv(
     'BOE_CONSOLIDADA_BASE_URL', 
     'https://www.boe.es/datosabiertos/api/legislacion-consolidada'
@@ -67,7 +70,9 @@ class BOEConsolidadaClient:
         Returns:
             Lista de diccionarios con metadata de normas
         """
-        # Correct endpoint: base URL without /normas
+        # Real BOE API returns normas directly from base endpoint
+        # The API structure is: GET {base_url} returns all normas
+        # Not: GET {base_url}/normas (which doesn't exist)
         endpoint = self.base_url
         
         params = {}
@@ -81,7 +86,8 @@ class BOEConsolidadaClient:
         if query:
             params['q'] = query
         
-        # Note: API may not support pagination; we'll try but handle gracefully
+        # Note: BOE API may not support pagination parameters
+        # We include them but the API may ignore them
         if offset > 0:
             params['offset'] = offset
         if limit > 0 and limit != 100:
@@ -460,7 +466,7 @@ class BOEConsolidadaClient:
         date_str = str(date_str).strip()
         
         # Try YYYYMMDD format first (BOE API format)
-        if len(date_str) == 8 and date_str.isdigit():
+        if len(date_str) == BOE_DATE_FORMAT_LENGTH and date_str.isdigit():
             try:
                 return datetime.strptime(date_str, '%Y%m%d').date()
             except (ValueError, TypeError) as e:
