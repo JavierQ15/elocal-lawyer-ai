@@ -355,8 +355,29 @@ OLLAMA_EMBEDDING_MODEL=nomic-embed-text  # 768 dim
 OLLAMA_GENERATION_MODEL=llama3.2
 
 # BOE API
-BOE_CONSOLIDADA_BASE_URL=https://www.boe.es/datosabiertos/api/legislacion
+BOE_CONSOLIDADA_BASE_URL=https://www.boe.es/datosabiertos/api/legislacion-consolidada
+
+# Endpoint templates (optional, defaults work for standard API)
+BOE_CONSOLIDADA_INDICE_PATH_TEMPLATE={base}/{id_norma}/indice
+BOE_CONSOLIDADA_BLOQUE_PATH_TEMPLATE={base}/{id_norma}/bloques/{id_bloque}
 ```
+
+### Validar Conectividad con la API BOE
+
+Después de configurar, valida que el cliente puede conectarse a la API real:
+
+```bash
+# Ejecutar script de validación
+python scripts/validate_boe_api.py
+
+# O dentro del contenedor
+docker compose exec rag-api python /app/../scripts/validate_boe_api.py
+```
+
+Este script verificará:
+- Conectividad con la API del BOE
+- Que el parser produce resultados válidos
+- Estadísticas de los datos obtenidos
 
 ### GPU para Ollama
 
@@ -405,6 +426,35 @@ docker compose exec ollama ollama pull llama3.2
 1. Verifica pending_embeddings: `SELECT status, COUNT(*) FROM pending_embeddings GROUP BY status;`
 2. Si hay muchos "failed", revisa errores: `SELECT DISTINCT last_error FROM pending_embeddings WHERE status='failed';`
 3. Reintenta: DAG `rag_embed_and_index` marcará failed → pending automáticamente
+
+### Error: "No normas found" o lista vacía
+
+Si `boe_sync_consolidada` no encuentra normas:
+
+1. **Verifica la conectividad con la API**:
+   ```bash
+   python scripts/validate_boe_api.py
+   ```
+
+2. **Prueba el endpoint manualmente con curl**:
+   ```bash
+   curl 'https://www.boe.es/datosabiertos/api/legislacion-consolidada'
+   ```
+
+3. **Revisa los logs de Airflow** para errores de parsing:
+   ```bash
+   docker compose logs airflow-scheduler | grep -i error
+   ```
+
+4. **Verifica las fechas de filtrado**: La API puede no soportar todos los filtros. Intenta sin filtros primero.
+
+### Formato de fechas BOE
+
+La API del BOE usa formatos específicos:
+- **Fechas**: `YYYYMMDD` (ej: `20240115`)
+- **Fechas con hora**: `YYYYMMDDTHHMMSSZ` (ej: `20240115T120000Z`)
+
+El cliente maneja automáticamente estos formatos y los convierte a objetos Python `date` y `datetime`.
 
 ## 📚 Referencias
 
