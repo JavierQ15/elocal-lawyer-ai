@@ -184,12 +184,16 @@ class TestBOEConsolidadaClient(unittest.TestCase):
         self.assertTrue(hasattr(client, 'get_bloque'))
     
     def test_parse_date(self):
-        """Test date parsing."""
+        """Test date parsing with multiple formats."""
         from utils.boe_consolidada_client import BOEConsolidadaClient
         
         client = BOEConsolidadaClient()
         
-        # Test valid date
+        # Test YYYYMMDD format (BOE format)
+        parsed = client._parse_date('20240115')
+        self.assertEqual(parsed, date(2024, 1, 15))
+        
+        # Test YYYY-MM-DD format (ISO)
         parsed = client._parse_date('2024-01-15')
         self.assertEqual(parsed, date(2024, 1, 15))
         
@@ -200,6 +204,205 @@ class TestBOEConsolidadaClient(unittest.TestCase):
         # Test invalid date
         parsed = client._parse_date('invalid')
         self.assertIsNone(parsed)
+    
+    def test_parse_datetime(self):
+        """Test datetime parsing with multiple formats."""
+        from utils.boe_consolidada_client import BOEConsolidadaClient
+        from datetime import datetime
+        
+        client = BOEConsolidadaClient()
+        
+        # Test YYYYMMDDTHHMMSSZ format (BOE format)
+        parsed = client._parse_datetime('20240115T120000Z')
+        self.assertEqual(parsed, datetime(2024, 1, 15, 12, 0, 0))
+        
+        # Test ISO format
+        parsed = client._parse_datetime('2024-01-15T12:00:00')
+        self.assertEqual(parsed, datetime(2024, 1, 15, 12, 0, 0))
+        
+        # Test None
+        parsed = client._parse_datetime(None)
+        self.assertIsNone(parsed)
+        
+        # Test invalid datetime
+        parsed = client._parse_datetime('invalid')
+        self.assertIsNone(parsed)
+    
+    def test_parse_date_formats(self):
+        """Test date parsing with all BOE formats."""
+        from utils.boe_consolidada_client import BOEConsolidadaClient
+        
+        client = BOEConsolidadaClient()
+        
+        # Test YYYYMMDD format (BOE format)
+        parsed = client._parse_date('20240115')
+        self.assertEqual(parsed, date(2024, 1, 15))
+        
+        # Test another YYYYMMDD
+        parsed = client._parse_date('20181206')
+        self.assertEqual(parsed, date(2018, 12, 6))
+        
+        # Test YYYY-MM-DD format (ISO fallback)
+        parsed = client._parse_date('2024-01-15')
+        self.assertEqual(parsed, date(2024, 1, 15))
+    
+    def test_parse_datetime_formats(self):
+        """Test datetime parsing with all BOE formats."""
+        from utils.boe_consolidada_client import BOEConsolidadaClient
+        from datetime import datetime
+        
+        client = BOEConsolidadaClient()
+        
+        # Test YYYYMMDDTHHMMSSZ format (BOE format)
+        parsed = client._parse_datetime('20240115T120000Z')
+        self.assertEqual(parsed, datetime(2024, 1, 15, 12, 0, 0))
+        
+        # Test another BOE datetime
+        parsed = client._parse_datetime('20181206T093000Z')
+        self.assertEqual(parsed, datetime(2018, 12, 6, 9, 30, 0))
+    
+    def test_parse_list_normas_real_shape(self):
+        """Test parsing list_normas with real API JSON structure."""
+        from utils.boe_consolidada_client import BOEConsolidadaClient
+        
+        client = BOEConsolidadaClient()
+        
+        # Real API response structure
+        real_response = {
+            "status": {
+                "code": "200",
+                "text": "OK"
+            },
+            "data": [
+                {
+                    "identificador": "BOE-A-2018-16673",
+                    "titulo": "Ley Orgánica 3/2018, de 5 de diciembre",
+                    "fecha_actualizacion": "20240115T120000Z",
+                    "fecha_publicacion": "20181206",
+                    "fecha_disposicion": "20181205",
+                    "rango": {
+                        "codigo": "050",
+                        "texto": "Ley Orgánica"
+                    },
+                    "departamento": {
+                        "codigo": "M123",
+                        "texto": "Ministerio de la Presidencia"
+                    },
+                    "ambito": {
+                        "codigo": "E",
+                        "texto": "Estatal"
+                    },
+                    "url_html_consolidada": "https://www.boe.es/buscar/act.php?id=BOE-A-2018-16673",
+                    "url_eli": "https://www.boe.es/eli/es/lo/2018/12/05/3/con"
+                }
+            ]
+        }
+        
+        normas = client._parse_normas_json(real_response)
+        
+        self.assertEqual(len(normas), 1)
+        norma = normas[0]
+        self.assertEqual(norma['id_norma'], "BOE-A-2018-16673")
+        self.assertIsNotNone(norma['titulo'])
+        self.assertEqual(norma['rango'], "Ley Orgánica")
+        self.assertEqual(norma['departamento'], "Ministerio de la Presidencia")
+        self.assertEqual(norma['ambito'], "Estatal")
+        self.assertEqual(norma['fecha_publicacion'], date(2018, 12, 6))
+        self.assertEqual(norma['fecha_actualizacion_api'], datetime(2024, 1, 15, 12, 0, 0))
+    
+    def test_parse_indice_real_shape(self):
+        """Test parsing get_indice with real API JSON structure."""
+        from utils.boe_consolidada_client import BOEConsolidadaClient
+        
+        client = BOEConsolidadaClient()
+        
+        # Test with data as single object
+        real_response_obj = {
+            "status": {"code": "200", "text": "OK"},
+            "data": {
+                "identificador": "BOE-A-2018-16673",
+                "titulo": "Ley Orgánica 3/2018",
+                "bloques": [
+                    {
+                        "identificador": "TITULO_I",
+                        "tipo": "Título",
+                        "titulo": "Título I. Disposiciones generales",
+                        "fecha_actualizacion": "20240115T120000Z",
+                        "url": "https://www.boe.es/..."
+                    },
+                    {
+                        "identificador": "ART_1",
+                        "tipo": "Artículo",
+                        "titulo": "Artículo 1. Objeto",
+                        "fecha_actualizacion": "20240115T120000Z"
+                    }
+                ]
+            }
+        }
+        
+        result = client._parse_indice_json(real_response_obj)
+        
+        self.assertEqual(result['id_norma'], "BOE-A-2018-16673")
+        self.assertEqual(len(result['bloques']), 2)
+        self.assertEqual(result['bloques'][0]['id_bloque'], "TITULO_I")
+        self.assertEqual(result['bloques'][1]['id_bloque'], "ART_1")
+        
+        # Test with data as array with single object
+        real_response_array = {
+            "status": {"code": "200", "text": "OK"},
+            "data": [{
+                "identificador": "BOE-A-2018-16673",
+                "bloques": [
+                    {"identificador": "ART_2", "tipo": "Artículo", "titulo": "Artículo 2"}
+                ]
+            }]
+        }
+        
+        result = client._parse_indice_json(real_response_array)
+        
+        self.assertEqual(len(result['bloques']), 1)
+        self.assertEqual(result['bloques'][0]['id_bloque'], "ART_2")
+    
+    def test_parse_bloque_real_shape(self):
+        """Test parsing get_bloque with real API JSON structure."""
+        from utils.boe_consolidada_client import BOEConsolidadaClient
+        
+        client = BOEConsolidadaClient()
+        
+        # Test with data as single object
+        real_response = {
+            "status": {"code": "200", "text": "OK"},
+            "data": {
+                "id_norma": "BOE-A-2018-16673",
+                "identificador_bloque": "ART_5",
+                "tipo": "Artículo",
+                "titulo": "Artículo 5. Definiciones",
+                "versiones": [
+                    {
+                        "id_norma_modificadora": "BOE-A-2018-16673",
+                        "fecha_vigencia": "20181207",
+                        "fecha_publicacion": "20181206",
+                        "html": "<p>Contenido del artículo...</p>"
+                    },
+                    {
+                        "id_norma_modificadora": "BOE-A-2020-12345",
+                        "fecha_vigencia_desde": "20200101",
+                        "html": "<p>Contenido modificado...</p>"
+                    }
+                ]
+            }
+        }
+        
+        result = client._parse_bloque_json(real_response)
+        
+        self.assertEqual(result['id_norma'], "BOE-A-2018-16673")
+        self.assertEqual(result['id_bloque'], "ART_5")
+        self.assertEqual(len(result['versiones']), 2)
+        self.assertEqual(result['versiones'][0]['id_norma_modificadora'], "BOE-A-2018-16673")
+        self.assertEqual(result['versiones'][0]['fecha_vigencia_desde'], date(2018, 12, 7))
+        self.assertIsNotNone(result['versiones'][0]['html'])
+        self.assertEqual(result['versiones'][1]['fecha_vigencia_desde'], date(2020, 1, 1))
+
 
 
 if __name__ == '__main__':
