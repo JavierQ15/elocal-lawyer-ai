@@ -6,10 +6,6 @@ This DAG runs daily to:
 3. Sync bloques content (versiones) and generate fragmentos
 
 This is the INCREMENTAL sync DAG. For initial load, trigger it with a wider date range.
-
-Performance:
-- Uses parallel HTTP requests (ThreadPoolExecutor) for fetching indices and bloques
-- MAX_PARALLEL_WORKERS can be adjusted based on API rate limits and system resources
 """
 from datetime import datetime, timedelta
 from airflow import DAG
@@ -18,7 +14,6 @@ from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.utils.task_group import TaskGroup
 import sys
 import json
-import os
 sys.path.insert(0, '/opt/airflow/dags')
 
 from utils.boe_consolidada_client import get_client
@@ -30,9 +25,6 @@ from utils.idempotency import (
     check_version_exists,
     check_fragmento_exists
 )
-
-# Performance tuning: adjust based on API rate limits and system capacity
-MAX_PARALLEL_WORKERS = int(os.getenv('BOE_SYNC_PARALLEL_WORKERS', '10'))
 
 default_args = {
     'owner': 'airflow',
@@ -143,10 +135,8 @@ def sync_indices(**context):
     """
     Tarea 2: Sincroniza índices de las normas descubiertas.
     Para cada norma, obtiene su índice (estructura de bloques) y detecta cambios.
-    Uses parallel fetching for better performance.
     """
     import logging
-    from concurrent.futures import ThreadPoolExecutor, as_completed
     logger = logging.getLogger(__name__)
     
     # Obtener lista de normas a procesar
@@ -168,34 +158,14 @@ def sync_indices(**context):
     
     dirty_bloques = []  # Lista de (id_norma, id_bloque) que necesitan actualización
     
-    # Function to fetch a single indice (for parallelization)
-    def fetch_indice(id_norma):
+    for id_norma in id_normas:
         try:
+            logger.info(f"Fetching indice for {id_norma}")
             indice = client.get_indice(id_norma)
-            return (id_norma, indice, None)
-        except Exception as e:
-            return (id_norma, None, str(e))
-    
-    # Parallel fetch of indices (I/O bound operation)
-    logger.info(f"Fetching {len(id_normas)} indices with {MAX_PARALLEL_WORKERS} parallel workers")
-    
-    fetched_indices = []
-    with ThreadPoolExecutor(max_workers=MAX_PARALLEL_WORKERS) as executor:
-        future_to_norma = {executor.submit(fetch_indice, id_norma): id_norma 
-                          for id_norma in id_normas}
-        
-        for i, future in enumerate(as_completed(future_to_norma)):
-            if i % 20 == 0 and i > 0:
-                logger.info(f"Fetched {i}/{len(id_normas)} indices")
             
-            id_norma, indice, error = future.result()
-            
-            if error:
-                logger.error(f"Failed to fetch indice for {id_norma}: {error}")
-                continue
-            
-            if not indice or 'error' in indice:
-                logger.warning(f"Failed to get indice for {id_norma}: {indice.get('error') if indice else 'Unknown error'}")
+            # Check for errors in response
+            if 'error' in indice:
+                logger.warning(f"Failed to get indice for {id_norma}: {indice['error']}")
                 continue
             
             bloques = indice.get('bloques', [])
@@ -203,15 +173,7 @@ def sync_indices(**context):
                 logger.warning(f"No bloques found for {id_norma}")
                 continue
             
-            fetched_indices.append((id_norma, indice))
-    
-    logger.info(f"Successfully fetched {len(fetched_indices)}/{len(id_normas)} indices")
-    logger.info(f"Processing bloques and detecting changes...")
-    
-    # Process fetched indices sequentially (database operations)
-    for id_norma, indice in fetched_indices:
-        try:
-            bloques = indice.get('bloques', [])
+            logger.info(f"Processing {len(bloques)} bloques for {id_norma}")
             
             for bloque in bloques:
                 id_bloque = bloque.get('id_bloque')
@@ -234,12 +196,9 @@ def sync_indices(**context):
                 if not row:
                     # Bloque nuevo
                     is_dirty = True
-                else:
-                    # Bloque actualizado - handle None comparison properly
-                    db_fecha = row[0]
-                    # Mark as dirty if dates differ (including when one is None and other isn't)
-                    if db_fecha != fecha_actualizacion_bloque:
-                        is_dirty = True
+                elif row[0] != fecha_actualizacion_bloque:
+                    # Bloque actualizado
+                    is_dirty = True
                 
                 # Upsert bloque
                 cursor.execute("""
@@ -284,10 +243,9 @@ def sync_indices(**context):
 def sync_bloques_batch(**context):
     """
     Tarea 3: Sincroniza contenido de bloques dirty (versiones).
-    Procesa bloques en batch para eficiencia con paralelización.
+    Procesa bloques en batch para eficiencia.
     """
     import logging
-    from concurrent.futures import ThreadPoolExecutor, as_completed
     logger = logging.getLogger(__name__)
     
     # Obtener bloques dirty
@@ -309,79 +267,22 @@ def sync_bloques_batch(**context):
     
     processed_count = 0
     new_fragmentos_count = 0
-    failed_bloques_count = 0
     
-    # Group bloques by norma to detect normas with no available content
-    bloques_by_norma = {}
     for bloque_ref in dirty_bloques:
         id_norma = bloque_ref['id_norma']
-        if id_norma not in bloques_by_norma:
-            bloques_by_norma[id_norma] = []
-        bloques_by_norma[id_norma].append(bloque_ref)
-    
-    # Function to fetch a single bloque (for parallelization)
-    def fetch_bloque(bloque_ref):
-        id_norma = bloque_ref['id_norma']
         id_bloque = bloque_ref['id_bloque']
+        
         try:
+            logger.info(f"Fetching bloque {id_norma}/{id_bloque}")
             bloque_data = client.get_bloque(id_norma, id_bloque)
-            return (bloque_ref, bloque_data, None)
-        except Exception as e:
-            return (bloque_ref, None, str(e))
-    
-    # Parallel fetch of bloques (I/O bound operation)
-    # Use parallel workers to speed up HTTP requests
-    logger.info(f"Fetching {len(dirty_bloques)} bloques with {MAX_PARALLEL_WORKERS} parallel workers")
-    
-    # Fetch all bloques in parallel
-    fetched_bloques = []
-    with ThreadPoolExecutor(max_workers=MAX_PARALLEL_WORKERS) as executor:
-        future_to_bloque = {executor.submit(fetch_bloque, bloque_ref): bloque_ref 
-                           for bloque_ref in dirty_bloques}
-        
-        for i, future in enumerate(as_completed(future_to_bloque)):
-            if i % 50 == 0 and i > 0:
-                logger.info(f"Fetched {i}/{len(dirty_bloques)} bloques")
             
-            bloque_ref, bloque_data, error = future.result()
-            
-            if error:
-                failed_bloques_count += 1
-                if failed_bloques_count <= 3:
-                    logger.warning(f"Failed to fetch {bloque_ref['id_norma']}/{bloque_ref['id_bloque']}: {error}")
-                continue
-            
-            if not bloque_data or not bloque_data.get('versiones'):
-                if bloque_data and 'error' in bloque_data:
-                    failed_bloques_count += 1
-                continue
-            
-            fetched_bloques.append((bloque_ref, bloque_data))
-    
-    logger.info(f"Successfully fetched {len(fetched_bloques)}/{len(dirty_bloques)} bloques")
-    logger.info(f"Processing versions and creating fragments...")
-    
-    # Process fetched bloques sequentially (database operations)
-    for bloque_ref, bloque_data in fetched_bloques:
-        id_norma = bloque_ref['id_norma']
-        id_bloque = bloque_ref['id_bloque']
-        
-        try:
+            # Procesar cada versión del bloque
             versiones = bloque_data.get('versiones', [])
-            
-            if processed_count % 50 == 0 and processed_count > 0:
-                logger.info(f"Progress: Processed {processed_count}/{len(fetched_bloques)} bloques, created {new_fragmentos_count} fragmentos")
+            logger.info(f"Found {len(versiones)} versions for {id_norma}/{id_bloque}")
             
             for version in versiones:
                 html = version.get('html', '')
                 if not html:
-                    logger.debug(f"Skipping version without HTML: {id_norma}/{id_bloque}")
-                    continue
-                
-                # Skip versions without fecha_vigencia_desde (required for validity)
-                fecha_vigencia_desde = version.get('fecha_vigencia_desde')
-                if not fecha_vigencia_desde:
-                    logger.warning(f"Skipping version without fecha_vigencia_desde: {id_norma}/{id_bloque}")
                     continue
                 
                 # Calcular hashes
@@ -393,7 +294,7 @@ def sync_bloques_batch(**context):
                 id_version = generate_id_version(
                     id_norma=id_norma,
                     id_bloque=id_bloque,
-                    fecha_vigencia_desde=fecha_vigencia_desde,
+                    fecha_vigencia_desde=version.get('fecha_vigencia_desde'),
                     id_norma_modificadora=version.get('id_norma_modificadora'),
                     hash_html=hash_html
                 )
@@ -427,7 +328,7 @@ def sync_bloques_batch(**context):
                     id_bloque,
                     version.get('id_norma_modificadora'),
                     version.get('fecha_publicacion_mod'),
-                    fecha_vigencia_desde,
+                    version.get('fecha_vigencia_desde'),
                     vigencia_hasta,
                     hash_html,
                     hash_texto
@@ -482,9 +383,9 @@ def sync_bloques_batch(**context):
             processed_count += 1
             
             # Commit cada N bloques para no perder progreso
-            if processed_count % 50 == 0:
+            if processed_count % 10 == 0:
                 conn.commit()
-                logger.debug(f"Committed progress: {processed_count} bloques processed")
+                logger.info(f"Committed progress: {processed_count} bloques processed")
         
         except Exception as e:
             logger.error(f"Error processing bloque {id_norma}/{id_bloque}: {e}")
@@ -493,22 +394,7 @@ def sync_bloques_batch(**context):
     cursor.close()
     conn.close()
     
-    # Log summary with warnings if many bloques failed
     logger.info(f"Processed {processed_count} bloques, created {new_fragmentos_count} new fragmentos")
-    
-    if failed_bloques_count > 0:
-        failure_rate = (failed_bloques_count / len(dirty_bloques)) * 100
-        logger.warning(f"Failed to fetch content for {failed_bloques_count}/{len(dirty_bloques)} bloques ({failure_rate:.1f}%)")
-        
-        # Check if entire normas failed
-        for id_norma, bloque_refs in bloques_by_norma.items():
-            norma_failed_count = sum(1 for ref in bloque_refs 
-                                    if ref['id_bloque'] in [b['id_bloque'] for b in dirty_bloques[:failed_bloques_count]])
-            if norma_failed_count == len(bloque_refs):
-                logger.error(f"ALL bloques failed for norma {id_norma}. ")
-                logger.error(f"This norma may require HTML scraping or may not have block-level API access.")
-                logger.error(f"Consider using url_html_consolidada for this norma.")
-    
     return processed_count
 
 

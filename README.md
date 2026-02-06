@@ -76,12 +76,38 @@ make status
 
 ### 5. Ejecutar carga inicial de datos
 
-1. Accede a Airflow UI (http://localhost:8080)
-2. Busca el DAG `boe_initial_load`
-3. Activa el DAG (toggle en la columna izquierda)
-4. Haz clic en el botón "▶" para ejecutar manualmente
+**Opción A - Usando Make (Más fácil):**
 
-El proceso de carga inicial puede tardar dependiendo del volumen de datos configurado.
+```bash
+# Cargar datos de enero 2024
+make trigger-sync FROM=2024-01-01 TO=2024-01-31
+```
+
+**Opción B - Usando script PowerShell:**
+
+```powershell
+.\scripts\trigger_boe_sync.ps1 -FromDate "2024-01-01" -ToDate "2024-01-31"
+```
+
+**Opción C - Usando curl:**
+
+```bash
+curl -X POST "http://localhost:8080/api/v1/dags/boe_sync_consolidada/dagRuns" \
+  -H "Content-Type: application/json" \
+  -u "admin:admin" \
+  -d '{"conf": {"from_date": "2024-01-01", "to_date": "2024-01-31"}}'
+```
+
+**Opción D - Desde la UI de Airflow (solo datos de ayer):**
+
+1. Accede a Airflow UI (http://localhost:8080)
+2. Busca el DAG `boe_sync_consolidada`
+3. Activa el DAG y haz clic en ▶
+
+**Nota**: El DAG `boe_initial_load` es un placeholder de ejemplo y no carga datos reales.
+
+El proceso de carga inicial puede tardar dependiendo del volumen de datos configurado. 
+Monitorea el progreso en: http://localhost:8080/dags/boe_sync_consolidada/grid
 
 ### 6. Probar la API
 

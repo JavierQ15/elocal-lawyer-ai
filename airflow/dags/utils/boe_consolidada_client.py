@@ -6,14 +6,22 @@ Este módulo NO hace scraping HTML. Usa la API oficial del BOE para:
 - Listar normas consolidadas
 - Obtener índice de una norma
 - Obtener bloques con versiones
+
+Features:
+- Automatic retry with exponential backoff for transient network errors
+- Rate limiting protection
+- Connection pooling and keep-alive
 """
 import os
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 from datetime import datetime, date
 from typing import Dict, List, Optional, Any
 import xml.etree.ElementTree as ET
 import json
 import logging
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -27,26 +35,56 @@ BOE_CONSOLIDADA_BASE_URL = os.getenv(
 BOE_API_TIMEOUT = int(os.getenv('BOE_API_TIMEOUT', '30'))
 BOE_CONSOLIDADA_INDICE_PATH_TEMPLATE = os.getenv(
     'BOE_CONSOLIDADA_INDICE_PATH_TEMPLATE',
-    '{base}/{id_norma}/indice'
+    '{base}/id/{id_norma}/texto/indice'
 )
 BOE_CONSOLIDADA_BLOQUE_PATH_TEMPLATE = os.getenv(
     'BOE_CONSOLIDADA_BLOQUE_PATH_TEMPLATE',
-    '{base}/{id_norma}/bloques/{id_bloque}'
+    '{base}/id/{id_norma}/texto/bloque/{id_bloque}'
 )
 
 
 class BOEConsolidadaClient:
-    """Cliente para interactuar con la API de Legislación Consolidada del BOE."""
+    """
+    Cliente para interactuar con la API de Legislación Consolidada del BOE.
+    
+    Features:
+    - Automatic retry with exponential backoff for network errors
+    - Connection pooling for better performance
+    - Rate limiting protection
+    """
     
     def __init__(self, base_url: str = BOE_CONSOLIDADA_BASE_URL, timeout: int = BOE_API_TIMEOUT):
         self.base_url = base_url
         self.timeout = timeout
         self.indice_path_template = BOE_CONSOLIDADA_INDICE_PATH_TEMPLATE
         self.bloque_path_template = BOE_CONSOLIDADA_BLOQUE_PATH_TEMPLATE
+        
+        # Configure session with retry strategy
         self.session = requests.Session()
+        
+        # Retry strategy: retry on connection errors, timeouts, and 5xx errors
+        retry_strategy = Retry(
+            total=5,  # Total number of retries
+            backoff_factor=2,  # Wait 2^retry_count seconds between retries
+            status_forcelist=[429, 500, 502, 503, 504],  # Retry on these HTTP codes
+            allowed_methods=["GET"],  # Only retry GET requests
+            raise_on_status=False  # Don't raise exception on max retries
+        )
+        
+        # Mount adapter with retry strategy
+        adapter = HTTPAdapter(
+            max_retries=retry_strategy,
+            pool_connections=20,  # Number of connection pools
+            pool_maxsize=50  # Max connections per pool
+        )
+        self.session.mount("http://", adapter)
+        self.session.mount("https://", adapter)
+        
+        # Set headers - BOE API requires Accept: application/xml for bloques
         self.session.headers.update({
             'User-Agent': 'BOE-RAG-Client/1.0',
-            'Accept': 'application/xml, application/json'
+            'Accept': 'application/xml',
+            'Connection': 'keep-alive'
         })
     
     def list_normas(
@@ -77,20 +115,19 @@ class BOEConsolidadaClient:
         
         params = {}
         
-        # Try to support filtering if API accepts it
+        # BOE API uses 'from' and 'to' parameters (not fecha_actualizacion_desde/hasta)
         # Format dates as YYYYMMDD per BOE API format
         if from_date:
-            params['fecha_actualizacion_desde'] = from_date.strftime('%Y%m%d')
+            params['from'] = from_date.strftime('%Y%m%d')
         if to_date:
-            params['fecha_actualizacion_hasta'] = to_date.strftime('%Y%m%d')
+            params['to'] = to_date.strftime('%Y%m%d')
         if query:
-            params['q'] = query
+            params['query'] = query
         
-        # Note: BOE API may not support pagination parameters
-        # We include them but the API may ignore them
+        # Pagination parameters
         if offset > 0:
             params['offset'] = offset
-        if limit > 0 and limit != 100:
+        if limit != 100:  # Only add if different from default
             params['limit'] = limit
         
         try:
@@ -100,14 +137,16 @@ class BOEConsolidadaClient:
             
             # Parse response (could be XML or JSON)
             content_type = response.headers.get('Content-Type', '')
+            logger.info(f"Response content-type: {content_type}, status: {response.status_code}")
             
-            if 'json' in content_type:
-                return self._parse_normas_json(response.json())
-            elif 'xml' in content_type:
+            # Try to parse as JSON first (most common)
+            try:
+                data = response.json()
+                logger.info(f"Parsed JSON response, keys: {list(data.keys()) if isinstance(data, dict) else 'not a dict'}")
+                return self._parse_normas_json(data)
+            except ValueError as json_err:
+                logger.warning(f"Failed to parse as JSON: {json_err}, trying XML")
                 return self._parse_normas_xml(response.text)
-            else:
-                logger.warning(f"Unknown content type: {content_type}, trying JSON")
-                return self._parse_normas_json(response.json())
                 
         except requests.RequestException as e:
             logger.error(f"Error fetching normas: {e}")
@@ -147,13 +186,38 @@ class BOEConsolidadaClient:
                 return self._parse_indice_xml(response.text)
             else:
                 return self._parse_indice_json(response.json())
-                
+        
+        except requests.exceptions.ConnectionError as e:
+            logger.error(f"Connection error fetching indice for {id_norma}: {e}")
+            return {
+                'id_norma': id_norma,
+                'error': f'Connection error: {str(e)}',
+                'error_type': 'connection',
+                'bloques': []
+            }
+        except requests.exceptions.Timeout as e:
+            logger.error(f"Timeout fetching indice for {id_norma}: {e}")
+            return {
+                'id_norma': id_norma,
+                'error': f'Timeout: {str(e)}',
+                'error_type': 'timeout',
+                'bloques': []
+            }
+        except requests.exceptions.HTTPError as e:
+            logger.error(f"HTTP error fetching indice for {id_norma}: {e}")
+            return {
+                'id_norma': id_norma,
+                'error': f'HTTP {e.response.status_code}: {str(e)}',
+                'error_type': 'http',
+                'bloques': []
+            }
         except requests.RequestException as e:
             logger.error(f"Error fetching indice for {id_norma}: {e}")
             # Return empty structure instead of crashing
             return {
                 'id_norma': id_norma,
                 'error': str(e),
+                'error_type': 'unknown',
                 'bloques': []
             }
     
@@ -189,15 +253,44 @@ class BOEConsolidadaClient:
             response = self.session.get(endpoint, timeout=self.timeout)
             response.raise_for_status()
             
-            content_type = response.headers.get('Content-Type', '')
-            
-            if 'json' in content_type:
-                return self._parse_bloque_json(response.json())
-            elif 'xml' in content_type:
-                return self._parse_bloque_xml(response.text)
+            # BOE API only returns XML for bloques (JSON not supported)
+            return self._parse_bloque_xml(response.text)
+        
+        except requests.exceptions.ConnectionError as e:
+            logger.error(f"Connection error fetching bloque {id_norma}/{id_bloque}: {e}")
+            return {
+                'id_norma': id_norma,
+                'id_bloque': id_bloque,
+                'error': f'Connection error: {str(e)}',
+                'error_type': 'connection',
+                'versiones': []
+            }
+        except requests.exceptions.Timeout as e:
+            logger.error(f"Timeout fetching bloque {id_norma}/{id_bloque}: {e}")
+            return {
+                'id_norma': id_norma,
+                'id_bloque': id_bloque,
+                'error': f'Timeout: {str(e)}',
+                'error_type': 'timeout',
+                'versiones': []
+            }
+        except requests.HTTPError as e:
+            # Distinguish between different HTTP errors
+            if e.response.status_code == 400:
+                logger.debug(f"Bloque {id_norma}/{id_bloque} not available via API (400 Bad Request)")
+            elif e.response.status_code == 404:
+                logger.warning(f"Bloque {id_norma}/{id_bloque} not found (404)")
             else:
-                return self._parse_bloque_json(response.json())
-                
+                logger.error(f"HTTP error fetching bloque {id_norma}/{id_bloque}: {e}")
+            
+            return {
+                'id_norma': id_norma,
+                'id_bloque': id_bloque,
+                'error': str(e),
+                'error_code': e.response.status_code if hasattr(e, 'response') else None,
+                'error_type': 'http',
+                'versiones': []
+            }
         except requests.RequestException as e:
             logger.error(f"Error fetching bloque {id_norma}/{id_bloque}: {e}")
             # Return empty structure instead of crashing
@@ -205,6 +298,7 @@ class BOEConsolidadaClient:
                 'id_norma': id_norma,
                 'id_bloque': id_bloque,
                 'error': str(e),
+                'error_type': 'unknown',
                 'versiones': []
             }
     
@@ -312,32 +406,85 @@ class BOEConsolidadaClient:
         return normas
     
     def _parse_normas_xml(self, xml_text: str) -> List[Dict[str, Any]]:
-        """Parse XML response from list_normas."""
-        # TODO: Adapt to real BOE API XML structure
+        """Parse XML response from list_normas.
+        
+        Actual BOE API structure:
+        <response>
+          <status><code>200</code></status>
+          <data>
+            <item>
+              <identificador>BOE-A-2025-26458</identificador>
+              <titulo>Real Decreto-ley...</titulo>
+              <rango codigo="1320">Real Decreto-ley</rango>
+              <departamento codigo="7723">Jefatura del Estado</departamento>
+              <ambito codigo="1">Estatal</ambito>
+              <fecha_publicacion>20251224</fecha_publicacion>
+              <fecha_disposicion>20251223</fecha_disposicion>
+              <url_html_consolidada>https://...</url_html_consolidada>
+              <url_eli>https://...</url_eli>
+              <fecha_actualizacion>20260130T124315Z</fecha_actualizacion>
+            </item>
+          </data>
+        </response>
+        """
         normas = []
         
         try:
             root = ET.fromstring(xml_text)
             
-            for norma_elem in root.findall('.//norma'):
+            # Check status code
+            status_code = root.findtext('.//status/code')
+            if status_code != '200':
+                error_text = root.findtext('.//status/text', 'Unknown error')
+                logger.error(f"API returned error status {status_code}: {error_text}")
+                return []
+            
+            # Navigate to data section and find all items
+            data_elem = root.find('.//data')
+            if data_elem is None:
+                logger.warning("No <data> element found in XML response")
+                return []
+            
+            # Each norma is an <item> element
+            for item_elem in data_elem.findall('item'):
+                # Extract text content, handling elements with attributes
+                ambito_elem = item_elem.find('ambito')
+                ambito = ambito_elem.text if ambito_elem is not None else 'Estatal'
+                
+                departamento_elem = item_elem.find('departamento')
+                departamento = departamento_elem.text if departamento_elem is not None else None
+                
+                rango_elem = item_elem.find('rango')
+                rango = rango_elem.text if rango_elem is not None else None
+                
                 norma = {
-                    'id_norma': norma_elem.findtext('identificador'),
-                    'titulo': norma_elem.findtext('titulo'),
-                    'rango': norma_elem.findtext('rango'),
-                    'departamento': norma_elem.findtext('departamento'),
-                    'ambito': norma_elem.findtext('ambito', 'Estatal'),
-                    'fecha_publicacion': self._parse_date(norma_elem.findtext('fecha_publicacion')),
-                    'fecha_disposicion': self._parse_date(norma_elem.findtext('fecha_disposicion')),
-                    'url_html_consolidada': norma_elem.findtext('url_html'),
-                    'url_eli': norma_elem.findtext('url_eli'),
+                    'id_norma': item_elem.findtext('identificador'),
+                    'titulo': item_elem.findtext('titulo'),
+                    'rango': rango,
+                    'departamento': departamento,
+                    'ambito': ambito,
+                    'fecha_publicacion': self._parse_date(item_elem.findtext('fecha_publicacion')),
+                    'fecha_disposicion': self._parse_date(item_elem.findtext('fecha_disposicion')),
+                    'url_html_consolidada': item_elem.findtext('url_html_consolidada'),
+                    'url_eli': item_elem.findtext('url_eli'),
                     'fecha_actualizacion_api': self._parse_datetime(
-                        norma_elem.findtext('fecha_actualizacion')
+                        item_elem.findtext('fecha_actualizacion')
                     ),
                     'metadata': {}
                 }
-                normas.append(norma)
+                
+                # Only add normas with valid id_norma
+                if norma['id_norma']:
+                    normas.append(norma)
+                else:
+                    logger.warning(f"Skipping item without identificador: {item_elem.findtext('titulo')}")
+                    
         except ET.ParseError as e:
             logger.error(f"XML parse error: {e}")
+            logger.error(f"First 500 chars of XML: {xml_text[:500]}")
+        except Exception as e:
+            logger.error(f"Unexpected error parsing normas XML: {e}")
+            logger.error(f"First 500 chars of XML: {xml_text[:500]}")
         
         return normas
     
@@ -364,6 +511,8 @@ class BOEConsolidadaClient:
         # Extract bloques array - try multiple possible keys
         # Check for None explicitly to allow empty lists to be returned
         bloques_list = actual_data.get('bloques')
+        if bloques_list is None:
+            bloques_list = actual_data.get('bloque')  # BOE API uses singular 'bloque'
         if bloques_list is None:
             bloques_list = actual_data.get('estructura')
         if bloques_list is None:
@@ -410,19 +559,54 @@ class BOEConsolidadaClient:
         }
     
     def _parse_indice_xml(self, xml_text: str) -> Dict[str, Any]:
-        """Parse XML response from get_indice."""
-        # TODO: Adapt to real BOE API XML structure
+        """Parse XML response from get_indice.
+        
+        Actual BOE API structure:
+        <response>
+          <status><code>200</code></status>
+          <data>
+            <bloque>
+              <id>no</id>
+              <titulo>[titulo]</titulo>
+              <fecha_actualizacion>20260128</fecha_actualizacion>
+              <url>https://...</url>
+            </bloque>
+          </data>
+        </response>
+        
+        Note: id_norma is not in the response, it's passed by the caller.
+        """
         bloques = []
+        id_norma = None
+        titulo = None
         
         try:
             root = ET.fromstring(xml_text)
-            id_norma = root.findtext('identificador')
-            titulo = root.findtext('titulo')
             
-            for bloque_elem in root.findall('.//bloque'):
+            # Check status code
+            status_code = root.findtext('.//status/code')
+            if status_code != '200':
+                error_text = root.findtext('.//status/text', 'Unknown error')
+                logger.error(f"API returned error status {status_code}: {error_text}")
+                return {'bloques': []}
+            
+            # Navigate to data section
+            data_elem = root.find('.//data')
+            if data_elem is None:
+                logger.warning("No <data> element found in indice XML response")
+                return {'bloques': []}
+            
+            # Each bloque is directly under data
+            for bloque_elem in data_elem.findall('bloque'):
+                # Note: 'tipo' is not provided in the indice response, 
+                # it will need to be inferred or left null
+                id_bloque = bloque_elem.findtext('id')
+                if not id_bloque:
+                    continue
+                
                 bloque = {
-                    'id_bloque': bloque_elem.findtext('identificador'),
-                    'tipo': bloque_elem.findtext('tipo'),
+                    'id_bloque': id_bloque,
+                    'tipo': None,  # Not provided in indice response
                     'titulo_bloque': bloque_elem.findtext('titulo'),
                     'fecha_actualizacion_bloque': self._parse_datetime(
                         bloque_elem.findtext('fecha_actualizacion')
@@ -432,13 +616,18 @@ class BOEConsolidadaClient:
                 bloques.append(bloque)
             
             return {
-                'id_norma': id_norma,
-                'titulo': titulo,
+                'id_norma': id_norma,  # Will be set by caller
+                'titulo': titulo,       # Not in response
                 'metadata': {},
                 'bloques': bloques
             }
         except ET.ParseError as e:
-            logger.error(f"XML parse error: {e}")
+            logger.error(f"XML parse error in indice: {e}")
+            logger.error(f"First 500 chars of XML: {xml_text[:500]}")
+            return {'bloques': []}
+        except Exception as e:
+            logger.error(f"Unexpected error parsing indice XML: {e}")
+            logger.error(f"First 500 chars of XML: {xml_text[:500]}")
             return {'bloques': []}
     
     def _parse_bloque_json(self, data: Dict) -> Dict[str, Any]:
@@ -512,36 +701,86 @@ class BOEConsolidadaClient:
         }
     
     def _parse_bloque_xml(self, xml_text: str) -> Dict[str, Any]:
-        """Parse XML response from get_bloque."""
-        # TODO: Adapt to real BOE API XML structure
+        """Parse XML response from get_bloque.
+        
+        Real BOE API structure:
+        <response>
+          <status><code>200</code></status>
+          <data>
+            <bloque id="..." tipo="...">
+              <version id_norma="..." fecha_publicacion="..." fecha_vigencia="...">
+                <p>HTML content</p>
+              </version>
+            </bloque>
+          </data>
+        </response>
+        """
         versiones = []
+        id_norma = None
+        id_bloque = None
+        tipo = None
         
         try:
             root = ET.fromstring(xml_text)
             
-            for version_elem in root.findall('.//version'):
+            # Check for error response
+            status_code = root.findtext('.//status/code')
+            if status_code != '200':
+                error_text = root.findtext('.//status/text', 'Unknown error')
+                logger.error(f"BOE API error: {status_code} - {error_text}")
+                return {'versiones': [], 'error': error_text}
+            
+            # Get bloque element
+            bloque_elem = root.find('.//data/bloque')
+            if bloque_elem is None:
+                logger.warning("No bloque element found in XML")
+                return {'versiones': []}
+            
+            # Get bloque attributes
+            id_bloque = bloque_elem.get('id')
+            tipo = bloque_elem.get('tipo')
+            
+            # Parse versions
+            for version_elem in bloque_elem.findall('version'):
+                id_norma_mod = version_elem.get('id_norma')
+                fecha_pub = version_elem.get('fecha_publicacion')
+                fecha_vig = version_elem.get('fecha_vigencia')
+                
+                # Extract all HTML content from version element
+                # Convert entire version element to string, removing the version tag itself
+                html_content = ET.tostring(version_elem, encoding='unicode', method='html')
+                # Remove version tag wrapper
+                html_content = html_content.replace(f'<version id_norma="{id_norma_mod}" fecha_publicacion="{fecha_pub}" fecha_vigencia="{fecha_vig}">', '')
+                html_content = html_content.replace('</version>', '')
+                html_content = html_content.strip()
+                
                 version = {
-                    'id_norma_modificadora': version_elem.findtext('id_norma_modificadora'),
-                    'fecha_publicacion_mod': self._parse_date(
-                        version_elem.findtext('fecha_publicacion_mod')
-                    ),
-                    'fecha_vigencia_desde': self._parse_date(
-                        version_elem.findtext('fecha_vigencia_desde')
-                    ),
-                    'html': version_elem.findtext('contenido_html')
+                    'id_norma_modificadora': id_norma_mod,
+                    'fecha_publicacion_mod': self._parse_date(fecha_pub),
+                    'fecha_vigencia_desde': self._parse_date(fecha_vig),
+                    'html': html_content
                 }
+                
+                # Set id_norma from first version if not set
+                if id_norma is None:
+                    id_norma = id_norma_mod
+                
                 versiones.append(version)
             
             return {
-                'id_norma': root.findtext('id_norma'),
-                'id_bloque': root.findtext('id_bloque'),
-                'tipo': root.findtext('tipo'),
-                'titulo': root.findtext('titulo'),
+                'id_norma': id_norma,
+                'id_bloque': id_bloque,
+                'tipo': tipo,
                 'versiones': versiones
             }
         except ET.ParseError as e:
             logger.error(f"XML parse error: {e}")
-            return {'versiones': []}
+            logger.debug(f"XML content: {xml_text[:500]}")
+            return {'versiones': [], 'error': f'XML parse error: {str(e)}'}
+        except Exception as e:
+            logger.error(f"Unexpected error parsing bloque XML: {e}")
+            return {'versiones': [], 'error': f'Unexpected error: {str(e)}'}
+
     
     # =========================================================================
     # Helper methods
@@ -587,7 +826,8 @@ class BOEConsolidadaClient:
         """Parse datetime string to datetime object.
         
         Supports multiple formats:
-        - YYYYMMDDTHHMMSSZ (BOE format)
+        - YYYYMMDD (BOE date format - converted to datetime at midnight)
+        - YYYYMMDDTHHMMSSZ (BOE datetime format)
         - ISO 8601
         - YYYY-MM-DD HH:MM:SS
         """
@@ -597,7 +837,15 @@ class BOEConsolidadaClient:
         # Strip whitespace
         dt_str = str(dt_str).strip()
         
-        # Try YYYYMMDDTHHMMSSZ format first (BOE API format)
+        # Try YYYYMMDD format first (BOE API date-only format)
+        # Example: 19910301 -> 1991-03-01 00:00:00
+        if len(dt_str) == BOE_DATE_FORMAT_LENGTH and dt_str.isdigit():
+            try:
+                return datetime.strptime(dt_str, '%Y%m%d')
+            except (ValueError, TypeError) as e:
+                logger.debug(f"Failed to parse datetime as YYYYMMDD: {dt_str}, {e}")
+        
+        # Try YYYYMMDDTHHMMSSZ format (BOE API datetime format)
         # Example: 20240115T120000Z
         if 'T' in dt_str and dt_str.endswith('Z'):
             try:

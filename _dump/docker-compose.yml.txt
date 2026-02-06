@@ -34,17 +34,16 @@ services:
       - "${QDRANT_PORT:-6333}:6333"
       - "${QDRANT_GRPC_PORT:-6334}:6334"
     healthcheck:
-      test: ["CMD-SHELL", "timeout 10s bash -c ':> /dev/tcp/127.0.0.1/6333' || exit 1"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:6333/healthz"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 20s
     networks:
       - boe-network
 
   # Ollama - Local LLM for embeddings and generation
   ollama:
-    image: ollama/ollama:0.15.5
+    image: ollama/ollama:0.1.25
     container_name: boe-ollama
     volumes:
       - ollama_data:/root/.ollama
@@ -53,11 +52,10 @@ services:
     environment:
       - OLLAMA_HOST=0.0.0.0
     healthcheck:
-      test: ["CMD-SHELL", "timeout 10s bash -c ':> /dev/tcp/127.0.0.1/11434' || exit 1"]
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
       interval: 30s
       timeout: 10s
       retries: 5
-      start_period: 30s
     networks:
       - boe-network
     # GPU support for docker-compose (not swarm mode)
@@ -117,14 +115,7 @@ services:
       - QDRANT_COLLECTION_VIG=${QDRANT_COLLECTION_VIG:-boe_vigente_latest}
       - OLLAMA_HOST=ollama
       - OLLAMA_PORT=11434
-      - BOE_API_BASE_URL=${BOE_API_BASE_URL:-https://www.boe.es}
-      - BOE_CONSOLIDADA_BASE_URL=${BOE_CONSOLIDADA_BASE_URL:-https://www.boe.es/datosabiertos/api/legislacion-consolidada}
-      - BOE_API_TIMEOUT=${BOE_API_TIMEOUT:-30}
-      - BOE_SYNC_PARALLEL_WORKERS=${BOE_SYNC_PARALLEL_WORKERS:-2}
-      - BOE_CONSOLIDADA_INDICE_PATH_TEMPLATE=${BOE_CONSOLIDADA_INDICE_PATH_TEMPLATE:-{base}/id/{id_norma}/texto/indice}
-      - BOE_CONSOLIDADA_BLOQUE_PATH_TEMPLATE=${BOE_CONSOLIDADA_BLOQUE_PATH_TEMPLATE:-{base}/id/{id_norma}/texto/bloque/{id_bloque}}
       - AIRFLOW_CONN_BOE_POSTGRES=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-boe_legislation}
-      - AIRFLOW_CONN_POSTGRES_DEFAULT=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-boe_legislation}
     volumes:
       - ./airflow/dags:/opt/airflow/dags
       - ./airflow/logs:/opt/airflow/logs
@@ -170,14 +161,7 @@ services:
       - QDRANT_COLLECTION_VIG=${QDRANT_COLLECTION_VIG:-boe_vigente_latest}
       - OLLAMA_HOST=ollama
       - OLLAMA_PORT=11434
-      - BOE_API_BASE_URL=${BOE_API_BASE_URL:-https://www.boe.es}
-      - BOE_CONSOLIDADA_BASE_URL=${BOE_CONSOLIDADA_BASE_URL:-https://www.boe.es/datosabiertos/api/legislacion-consolidada}
-      - BOE_API_TIMEOUT=${BOE_API_TIMEOUT:-30}
-      - BOE_SYNC_PARALLEL_WORKERS=${BOE_SYNC_PARALLEL_WORKERS:-2}
-      - BOE_CONSOLIDADA_INDICE_PATH_TEMPLATE=${BOE_CONSOLIDADA_INDICE_PATH_TEMPLATE:-{base}/id/{id_norma}/texto/indice}
-      - BOE_CONSOLIDADA_BLOQUE_PATH_TEMPLATE=${BOE_CONSOLIDADA_BLOQUE_PATH_TEMPLATE:-{base}/id/{id_norma}/texto/bloque/{id_bloque}}
       - AIRFLOW_CONN_BOE_POSTGRES=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-boe_legislation}
-      - AIRFLOW_CONN_POSTGRES_DEFAULT=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-boe_legislation}
     volumes:
       - ./airflow/dags:/opt/airflow/dags
       - ./airflow/logs:/opt/airflow/logs
@@ -212,12 +196,6 @@ services:
       - _AIRFLOW_WWW_USER_CREATE=true
       - _AIRFLOW_WWW_USER_USERNAME=${AIRFLOW_WWW_USER_USERNAME:-admin}
       - _AIRFLOW_WWW_USER_PASSWORD=${AIRFLOW_WWW_USER_PASSWORD:-admin}
-      - POSTGRES_HOST=postgres
-      - POSTGRES_PORT=5432
-      - POSTGRES_USER=${POSTGRES_USER:-postgres}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
-      - POSTGRES_DB=${POSTGRES_DB:-boe_legislation}
-      - AIRFLOW_CONN_POSTGRES_DEFAULT=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-boe_legislation}
     volumes:
       - ./airflow/dags:/opt/airflow/dags
       - ./airflow/logs:/opt/airflow/logs
@@ -258,7 +236,7 @@ services:
       - ./rag-api/app:/app
     ports:
       - "${RAG_API_PORT:-8000}:8000"
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s

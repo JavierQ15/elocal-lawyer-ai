@@ -43,7 +43,7 @@ def fetch_and_embed_pending(**context):
     logger = logging.getLogger(__name__)
     
     BATCH_SIZE = 50
-    MAX_BATCHES = 300  # Limitar a 15000 fragmentos por ejecución (suficiente para procesar todos los pendientes)
+    MAX_BATCHES = 20  # Limitar a 1000 fragmentos por ejecución
     
     pg_hook = PostgresHook(postgres_conn_id='postgres_default')
     conn = pg_hook.get_conn()

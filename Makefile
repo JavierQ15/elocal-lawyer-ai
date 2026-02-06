@@ -1,3 +1,5 @@
+SHELL := C:/Program Files/Git/bin/bash.exe
+
 .PHONY: help setup up down restart logs clean init-db pull-models test
 
 help: ## Show this help message
@@ -11,7 +13,17 @@ setup: ## Initial setup - copy .env.example to .env and generate keys
 		cp .env.example .env; \
 		echo "Created .env file from .env.example"; \
 		echo "Generating Fernet key..."; \
-		python3 -c "from cryptography.fernet import Fernet; print('AIRFLOW_FERNET_KEY=' + Fernet.generate_key().decode())" >> .env.tmp; \
+		if command -v python &> /dev/null; then \
+			PYTHON_CMD=python; \
+		elif command -v python3 &> /dev/null; then \
+			PYTHON_CMD=python3; \
+		else \
+			echo "Error: Python not found. Please install Python from https://www.python.org/downloads/"; \
+			echo "After installing Python, run 'make setup' again or manually run:"; \
+			echo "  python scripts/generate_secrets.py"; \
+			exit 1; \
+		fi; \
+		$$PYTHON_CMD -c "from cryptography.fernet import Fernet; print('AIRFLOW_FERNET_KEY=' + Fernet.generate_key().decode())" >> .env.tmp; \
 		echo "Generating secret key..."; \
 		SECRET_KEY=$$(openssl rand -hex 32); \
 		echo "AIRFLOW_SECRET_KEY=$$SECRET_KEY" >> .env.tmp; \
@@ -92,6 +104,35 @@ test-ollama: ## Test Ollama connection
 	curl -X GET http://localhost:11434/api/tags
 
 test: test-api test-qdrant test-ollama ## Run all tests
+
+trigger-sync: ## Trigger boe_sync_consolidada DAG (use: make trigger-sync FROM=2024-01-01 TO=2024-01-31)
+	@powershell -ExecutionPolicy Bypass -File scripts/trigger_boe_sync.ps1 -FromDate $(FROM) -ToDate $(TO)
+
+sync-historical-monthly: ## Sync historical data month by month (use: make sync-historical-monthly START=2020-01 END=2024-12)
+	@if command -v python &> /dev/null; then \
+		PYTHON_CMD=python; \
+	elif command -v python3 &> /dev/null; then \
+		PYTHON_CMD=python3; \
+	else \
+		echo "Error: Python not found"; \
+		exit 1; \
+	fi; \
+	$$PYTHON_CMD scripts/sync_historical_monthly.py --start $(START) --end $(END)
+
+sync-historical-year: ## Sync a full year month by month (use: make sync-historical-year YEAR=2023)
+	@if command -v python &> /dev/null; then \
+		PYTHON_CMD=python; \
+	elif command -v python3 &> /dev/null; then \
+		PYTHON_CMD=python3; \
+	else \
+		echo "Error: Python not found"; \
+		exit 1; \
+	fi; \
+	$$PYTHON_CMD scripts/sync_historical_monthly.py --year $(YEAR)
+
+sync-retry-failed: ## Check logs and retry failed periods (manual - see failed_periods from previous run)
+	@echo "Review the failed periods from the last sync_historical_monthly run"
+	@echo "Then use: make trigger-sync FROM=YYYY-MM-DD TO=YYYY-MM-DD"
 
 shell-api: ## Open shell in RAG API container
 	docker-compose exec rag-api /bin/bash

@@ -1,0 +1,1504 @@
+{
+    "status": {
+        "code": "200",
+        "text": "ok"
+    },
+    "data": [
+        {
+            "fecha_actualizacion": "20260206T102348Z",
+            "identificador": "BOE-A-2020-12362",
+            "ambito": {
+                "codigo": "2",
+                "texto": "Auton\u00f3mico"
+            },
+            "departamento": {
+                "codigo": "8070",
+                "texto": "Comunidad Aut\u00f3noma de Catalu\u00f1a"
+            },
+            "rango": {
+                "codigo": "1500",
+                "texto": "Decreto-ley"
+            },
+            "fecha_disposicion": "20200804",
+            "numero_oficial": "30\/2020",
+            "titulo": "Decreto-ley 30\/2020, de 4 de agosto, por el que se establece el r\u00e9gimen sancionador espec\u00edfico por el incumplimiento de las medidas de prevenci\u00f3n y contenci\u00f3n sanitarias para hacer frente a la crisis sanitaria provocada por la COVID-19.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20201016",
+            "diario_numero": "274",
+            "fecha_vigencia": "20200807",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es-ct\/dl\/2020\/08\/04\/30",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2020-12362"
+        },
+        {
+            "fecha_actualizacion": "20260206T102109Z",
+            "identificador": "BOE-A-2020-615",
+            "ambito": {
+                "codigo": "2",
+                "texto": "Auton\u00f3mico"
+            },
+            "departamento": {
+                "codigo": "8140",
+                "texto": "Comunidad Aut\u00f3noma del Pa\u00eds Vasco"
+            },
+            "rango": {
+                "codigo": "1300",
+                "texto": "Ley"
+            },
+            "fecha_disposicion": "20191220",
+            "numero_oficial": "11\/2019",
+            "titulo": "Ley 11\/2019, de 20 de diciembre, de Cooperativas de Euskadi.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20200116",
+            "diario_numero": "14",
+            "fecha_vigencia": "20200129",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es-pv\/l\/2019\/12\/20\/11",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2020-615"
+        },
+        {
+            "fecha_actualizacion": "20260206T094215Z",
+            "identificador": "DOGC-f-1997-90001",
+            "ambito": {
+                "codigo": "2",
+                "texto": "Auton\u00f3mico"
+            },
+            "departamento": {
+                "codigo": "8070",
+                "texto": "Comunidad Aut\u00f3noma de Catalu\u00f1a"
+            },
+            "rango": {
+                "codigo": "1470",
+                "texto": "Decreto Legislativo"
+            },
+            "fecha_disposicion": "19971031",
+            "numero_oficial": "1\/1997",
+            "titulo": "Decreto Legislativo 1\/1997, de 31 de octubre, por el que se aprueba la refundici\u00f3n en un Texto \u00fanico de los preceptos de determinados textos legales vigentes en Catalu\u00f1a en materia de funci\u00f3n p\u00fablica.",
+            "diario": "Diari Oficial de la Generalitat de Catalunya",
+            "fecha_publicacion": "19971103",
+            "diario_numero": "2509",
+            "fecha_vigencia": "19971123",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "4",
+                "texto": "Desactualizado"
+            },
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=DOGC-f-1997-90001"
+        },
+        {
+            "fecha_actualizacion": "20260206T094214Z",
+            "identificador": "BOE-A-2006-13087",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "7723",
+                "texto": "Jefatura del Estado"
+            },
+            "rango": {
+                "codigo": "1290",
+                "texto": "Ley Org\u00e1nica"
+            },
+            "fecha_disposicion": "20060719",
+            "numero_oficial": "6\/2006",
+            "titulo": "Ley Org\u00e1nica 6\/2006, de 19 de julio, de reforma del Estatuto de Autonom\u00eda de Catalu\u00f1a.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20060720",
+            "diario_numero": "172",
+            "fecha_vigencia": "20060809",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/lo\/2006\/07\/19\/6",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2006-13087"
+        },
+        {
+            "fecha_actualizacion": "20260206T093037Z",
+            "identificador": "BOE-A-2026-2727",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "3120",
+                "texto": "Ministerio de Agricultura, Pesca y Alimentaci\u00f3n"
+            },
+            "rango": {
+                "codigo": "1340",
+                "texto": "Real Decreto"
+            },
+            "fecha_disposicion": "20260204",
+            "numero_oficial": "69\/2026",
+            "titulo": "Real Decreto 69\/2026, de 4 de febrero, por el que se regulan aspectos organizativos en materia de bienestar y protecci\u00f3n de los animales mantenidos con fines agrarios y para la acuicultura.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20260206",
+            "diario_numero": "33",
+            "fecha_vigencia": "20260207",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/rd\/2026\/02\/04\/69",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2026-2727"
+        },
+        {
+            "fecha_actualizacion": "20260206T093007Z",
+            "identificador": "BOE-A-2026-2726",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "7320",
+                "texto": "Ministerio del Interior"
+            },
+            "rango": {
+                "codigo": "1340",
+                "texto": "Real Decreto"
+            },
+            "fecha_disposicion": "20260204",
+            "numero_oficial": "67\/2026",
+            "titulo": "Real Decreto 67\/2026, de 4 de febrero, por el que se regula la gesti\u00f3n de la incapacidad temporal del personal del Cuerpo de la Guardia Civil.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20260206",
+            "diario_numero": "33",
+            "fecha_vigencia": "20260226",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/rd\/2026\/02\/04\/67",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2026-2726"
+        },
+        {
+            "fecha_actualizacion": "20260206T092954Z",
+            "identificador": "BOE-A-2026-2725",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "6110",
+                "texto": "Ministerio de Defensa"
+            },
+            "rango": {
+                "codigo": "1340",
+                "texto": "Real Decreto"
+            },
+            "fecha_disposicion": "20260204",
+            "numero_oficial": "66\/2026",
+            "titulo": "Real Decreto 66\/2026, de 4 de febrero, por el que se regulan las adquisiciones en com\u00fan y proyectos colaborativos en el marco de las iniciativas europeas de defensa.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20260206",
+            "diario_numero": "33",
+            "fecha_vigencia": "20260207",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/rd\/2026\/02\/04\/66",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2026-2725"
+        },
+        {
+            "fecha_actualizacion": "20260206T081455Z",
+            "identificador": "BOE-A-2007-19321",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "7723",
+                "texto": "Jefatura del Estado"
+            },
+            "rango": {
+                "codigo": "1300",
+                "texto": "Ley"
+            },
+            "fecha_disposicion": "20071107",
+            "numero_oficial": "32\/2007",
+            "titulo": "Ley 32\/2007, de 7 de noviembre, para el cuidado de los animales, en su explotaci\u00f3n, transporte, experimentaci\u00f3n y sacrificio.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20071108",
+            "diario_numero": "268",
+            "fecha_vigencia": "20071208",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/l\/2007\/11\/07\/32",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2007-19321"
+        },
+        {
+            "fecha_actualizacion": "20260206T081455Z",
+            "identificador": "BOE-A-2024-15212",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "9595",
+                "texto": "Ministerio para la Transformaci\u00f3n Digital y de la Funci\u00f3n P\u00fablica"
+            },
+            "rango": {
+                "codigo": "1340",
+                "texto": "Real Decreto"
+            },
+            "fecha_disposicion": "20240723",
+            "numero_oficial": "717\/2024",
+            "titulo": "Real Decreto 717\/2024, de 23 de julio, por el que se desarrolla la estructura org\u00e1nica b\u00e1sica del Ministerio de Agricultura, Pesca y Alimentaci\u00f3n.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20240724",
+            "diario_numero": "178",
+            "fecha_vigencia": "20240725",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/rd\/2024\/07\/23\/717",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2024-15212"
+        },
+        {
+            "fecha_actualizacion": "20260206T081454Z",
+            "identificador": "BOE-A-2000-4698",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "3120",
+                "texto": "Ministerio de Agricultura, Pesca y Alimentaci\u00f3n"
+            },
+            "rango": {
+                "codigo": "1340",
+                "texto": "Real Decreto"
+            },
+            "fecha_disposicion": "20000310",
+            "numero_oficial": "348\/2000",
+            "titulo": "Real Decreto 348\/2000, de 10 de marzo, por el que se incorpora al ordenamiento jur\u00eddico la Directiva 98\/58\/CE, relativa a la protecci\u00f3n de los animales en las explotaciones ganaderas.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20000311",
+            "diario_numero": "61",
+            "fecha_vigencia": "20000312",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "4",
+                "texto": "Desactualizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/rd\/2000\/03\/10\/348",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2000-4698"
+        },
+        {
+            "fecha_actualizacion": "20260206T081454Z",
+            "identificador": "BOE-A-2023-6083",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "9574",
+                "texto": "Ministerio de la Presidencia, Relaciones con las Cortes y Memoria Democr\u00e1tica"
+            },
+            "rango": {
+                "codigo": "1340",
+                "texto": "Real Decreto"
+            },
+            "fecha_disposicion": "20230307",
+            "numero_oficial": "159\/2023",
+            "titulo": "Real Decreto 159\/2023, de 7 de marzo, por el que se establecen disposiciones para la aplicaci\u00f3n en Espa\u00f1a de la normativa de la Uni\u00f3n Europea sobre controles oficiales en materia de bienestar animal, y se modifican varios reales decretos.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20230308",
+            "diario_numero": "57",
+            "fecha_vigencia": "20230309",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "4",
+                "texto": "Desactualizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/rd\/2023\/03\/07\/159",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2023-6083"
+        },
+        {
+            "fecha_actualizacion": "20260206T080046Z",
+            "identificador": "BOE-A-2021-15781",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "9580",
+                "texto": "Ministerio de Universidades"
+            },
+            "rango": {
+                "codigo": "1340",
+                "texto": "Real Decreto"
+            },
+            "fecha_disposicion": "20210928",
+            "numero_oficial": "822\/2021",
+            "titulo": "Real Decreto 822\/2021, de 28 de septiembre, por el que se establece la organizaci\u00f3n de las ense\u00f1anzas universitarias y del procedimiento de aseguramiento de su calidad.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20210929",
+            "diario_numero": "233",
+            "fecha_vigencia": "20211019",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/rd\/2021\/09\/28\/822",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2021-15781"
+        },
+        {
+            "fecha_actualizacion": "20260206T075307Z",
+            "identificador": "BOE-A-1985-12666",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "7723",
+                "texto": "Jefatura del Estado"
+            },
+            "rango": {
+                "codigo": "1290",
+                "texto": "Ley Org\u00e1nica"
+            },
+            "fecha_disposicion": "19850701",
+            "numero_oficial": "6\/1985",
+            "titulo": "Ley Org\u00e1nica 6\/1985, de 1 de julio, del Poder Judicial.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "19850702",
+            "diario_numero": "157",
+            "fecha_vigencia": "19850703",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/lo\/1985\/07\/01\/6",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-1985-12666"
+        },
+        {
+            "fecha_actualizacion": "20260206T075307Z",
+            "identificador": "BOE-A-2025-76",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "7723",
+                "texto": "Jefatura del Estado"
+            },
+            "rango": {
+                "codigo": "1290",
+                "texto": "Ley Org\u00e1nica"
+            },
+            "fecha_disposicion": "20250102",
+            "numero_oficial": "1\/2025",
+            "titulo": "Ley Org\u00e1nica 1\/2025, de 2 de enero, de medidas en materia de eficiencia del Servicio P\u00fablico de Justicia.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20250103",
+            "diario_numero": "3",
+            "fecha_vigencia": "20250403",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/lo\/2025\/01\/02\/1",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2025-76"
+        },
+        {
+            "fecha_actualizacion": "20260206T074740Z",
+            "identificador": "BOE-A-2010-9274",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "4435",
+                "texto": "Ministerio de Trabajo e Inmigraci\u00f3n"
+            },
+            "rango": {
+                "codigo": "1340",
+                "texto": "Real Decreto"
+            },
+            "fecha_disposicion": "20100528",
+            "numero_oficial": "713\/2010",
+            "titulo": "Real Decreto 713\/2010, de 28 de mayo, sobre registro y dep\u00f3sito de convenios y acuerdos colectivos de trabajo.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20100612",
+            "diario_numero": "143",
+            "fecha_vigencia": "20101001",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/rd\/2010\/05\/28\/713",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2010-9274"
+        },
+        {
+            "fecha_actualizacion": "20260206T074740Z",
+            "identificador": "BOE-A-2015-11430",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "9218",
+                "texto": "Ministerio de Empleo y Seguridad Social"
+            },
+            "rango": {
+                "codigo": "1310",
+                "texto": "Real Decreto Legislativo"
+            },
+            "fecha_disposicion": "20151023",
+            "numero_oficial": "2\/2015",
+            "titulo": "Real Decreto Legislativo 2\/2015, de 23 de octubre, por el que se aprueba el texto refundido de la Ley del Estatuto de los Trabajadores.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20151024",
+            "diario_numero": "255",
+            "fecha_vigencia": "20151113",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/rdlg\/2015\/10\/23\/2",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2015-11430"
+        },
+        {
+            "fecha_actualizacion": "20260206T074558Z",
+            "identificador": "BOE-A-2005-3241",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "7710",
+                "texto": "Ministerio de la Presidencia"
+            },
+            "rango": {
+                "codigo": "1340",
+                "texto": "Real Decreto"
+            },
+            "fecha_disposicion": "20050218",
+            "numero_oficial": "179\/2005",
+            "titulo": "Real Decreto 179\/2005, de 18 de febrero, sobre prevenci\u00f3n de riesgos laborales en la Guardia Civil.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20050226",
+            "diario_numero": "49",
+            "fecha_vigencia": "20050227",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "4",
+                "texto": "Desactualizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/rd\/2005\/02\/18\/179",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2005-3241"
+        },
+        {
+            "fecha_actualizacion": "20260206T074558Z",
+            "identificador": "BOE-A-2007-18391",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "7723",
+                "texto": "Jefatura del Estado"
+            },
+            "rango": {
+                "codigo": "1290",
+                "texto": "Ley Org\u00e1nica"
+            },
+            "fecha_disposicion": "20071022",
+            "numero_oficial": "11\/2007",
+            "titulo": "Ley Org\u00e1nica 11\/2007, de 22 de octubre, reguladora de los derechos y deberes de los miembros de la Guardia Civil.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20071023",
+            "diario_numero": "254",
+            "fecha_vigencia": "20071112",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/lo\/2007\/10\/22\/11",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2007-18391"
+        },
+        {
+            "fecha_actualizacion": "20260206T074558Z",
+            "identificador": "BOE-A-2014-12408",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "7723",
+                "texto": "Jefatura del Estado"
+            },
+            "rango": {
+                "codigo": "1300",
+                "texto": "Ley"
+            },
+            "fecha_disposicion": "20141128",
+            "numero_oficial": "29\/2014",
+            "titulo": "Ley 29\/2014, de 28 de noviembre, de R\u00e9gimen del Personal de la Guardia Civil.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20141129",
+            "diario_numero": "289",
+            "fecha_vigencia": "20141130",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/l\/2014\/11\/28\/29",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2014-12408"
+        },
+        {
+            "fecha_actualizacion": "20260206T072544Z",
+            "identificador": "BOE-A-2012-15595",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "7723",
+                "texto": "Jefatura del Estado"
+            },
+            "rango": {
+                "codigo": "1300",
+                "texto": "Ley"
+            },
+            "fecha_disposicion": "20121226",
+            "numero_oficial": "12\/2012",
+            "titulo": "Ley 12\/2012, de 26 de diciembre, de medidas urgentes de liberalizaci\u00f3n del comercio y de determinados servicios.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20121227",
+            "diario_numero": "311",
+            "fecha_vigencia": "20121228",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/l\/2012\/12\/26\/12",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2012-15595"
+        },
+        {
+            "fecha_actualizacion": "20260205T153344Z",
+            "identificador": "BOE-A-2022-11311",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "7723",
+                "texto": "Jefatura del Estado"
+            },
+            "rango": {
+                "codigo": "1300",
+                "texto": "Ley"
+            },
+            "fecha_disposicion": "20220707",
+            "numero_oficial": "13\/2022",
+            "titulo": "Ley 13\/2022, de 7 de julio, General de Comunicaci\u00f3n Audiovisual.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20220708",
+            "diario_numero": "163",
+            "fecha_vigencia": "20220709",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/l\/2022\/07\/07\/13",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2022-11311"
+        },
+        {
+            "fecha_actualizacion": "20260205T141252Z",
+            "identificador": "BOE-A-2020-2838",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "9575",
+                "texto": "Ministerio para la Transici\u00f3n Ecol\u00f3gica y el Reto Demogr\u00e1fico"
+            },
+            "rango": {
+                "codigo": "1350",
+                "texto": "Orden"
+            },
+            "fecha_disposicion": "20200224",
+            "numero_oficial": "TED\/171\/2020",
+            "titulo": "Orden TED\/171\/2020, de 24 de febrero, por la que se actualizan los par\u00e1metros retributivos de las instalaciones tipo aplicables a determinadas instalaciones de producci\u00f3n de energ\u00eda el\u00e9ctrica a partir de fuentes de energ\u00eda renovables, cogeneraci\u00f3n y residuos, a efectos de su aplicaci\u00f3n al periodo regulatorio que tiene su inicio el 1 de enero de 2020.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20200228",
+            "diario_numero": "51",
+            "fecha_vigencia": "20200229",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/o\/2020\/02\/24\/ted171",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2020-2838"
+        },
+        {
+            "fecha_actualizacion": "20260205T141216Z",
+            "identificador": "BOE-A-2019-5571",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "9566",
+                "texto": "Ministerio para la Transici\u00f3n Ecol\u00f3gica"
+            },
+            "rango": {
+                "codigo": "1350",
+                "texto": "Orden"
+            },
+            "fecha_disposicion": "20190405",
+            "numero_oficial": "TEC\/427\/2019",
+            "titulo": "Orden TEC\/427\/2019, de 5 de abril, por la que se establecen los valores de la retribuci\u00f3n a la operaci\u00f3n correspondientes al segundo semestre natural del a\u00f1o 2018 y por la que se aprueban instalaciones tipo y se establecen sus correspondientes par\u00e1metros retributivos, aplicables a determinadas instalaciones de producci\u00f3n de energ\u00eda el\u00e9ctrica a partir de fuentes de energ\u00eda renovables, cogeneraci\u00f3n y residuos.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20190413",
+            "diario_numero": "89",
+            "fecha_vigencia": "20190414",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/o\/2019\/04\/05\/tec427",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2019-5571"
+        },
+        {
+            "fecha_actualizacion": "20260205T141133Z",
+            "identificador": "BOE-A-2018-4749",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "9282",
+                "texto": "Ministerio de Energ\u00eda, Turismo y Agenda Digital"
+            },
+            "rango": {
+                "codigo": "1350",
+                "texto": "Orden"
+            },
+            "fecha_disposicion": "20180406",
+            "numero_oficial": "ETU\/360\/2018",
+            "titulo": "Orden ETU\/360\/2018, de 6 de abril, por la que se establecen los valores de la retribuci\u00f3n a la operaci\u00f3n correspondientes al primer semestre natural del a\u00f1o 2018 y por la que se aprueba una instalaci\u00f3n tipo y se establecen sus correspondientes par\u00e1metros retributivos, aplicables a determinadas instalaciones de producci\u00f3n de energ\u00eda el\u00e9ctrica a partir de fuentes de energ\u00eda renovables, cogeneraci\u00f3n y residuos.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20180407",
+            "diario_numero": "85",
+            "fecha_vigencia": "20180408",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/o\/2018\/04\/06\/etu360",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2018-4749"
+        },
+        {
+            "fecha_actualizacion": "20260205T141048Z",
+            "identificador": "BOE-A-2017-12406",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "9282",
+                "texto": "Ministerio de Energ\u00eda, Turismo y Agenda Digital"
+            },
+            "rango": {
+                "codigo": "1350",
+                "texto": "Orden"
+            },
+            "fecha_disposicion": "20171027",
+            "numero_oficial": "ETU\/1046\/2017",
+            "titulo": "Orden ETU\/1046\/2017, de 27 de octubre, por la que se establecen los valores de la retribuci\u00f3n a la operaci\u00f3n correspondientes al segundo semestre natural del a\u00f1o 2017, se aprueban instalaciones tipo y se establecen sus correspondientes par\u00e1metros retributivos, aplicables a determinadas instalaciones de producci\u00f3n de energ\u00eda el\u00e9ctrica a partir de fuentes de energ\u00eda renovables, cogeneraci\u00f3n y residuos.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20171031",
+            "diario_numero": "264",
+            "fecha_vigencia": "20171101",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/o\/2017\/10\/27\/etu1046",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2017-12406"
+        },
+        {
+            "fecha_actualizacion": "20260205T141017Z",
+            "identificador": "BOE-A-2017-7389",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "9282",
+                "texto": "Ministerio de Energ\u00eda, Turismo y Agenda Digital"
+            },
+            "rango": {
+                "codigo": "1350",
+                "texto": "Orden"
+            },
+            "fecha_disposicion": "20170627",
+            "numero_oficial": "ETU\/615\/2017",
+            "titulo": "Orden ETU\/615\/2017, de 27 de junio, por la que se determina el procedimiento de asignaci\u00f3n del r\u00e9gimen retributivo espec\u00edfico, los par\u00e1metros retributivos correspondientes, y dem\u00e1s aspectos que ser\u00e1n de aplicaci\u00f3n para el cupo de 3.000 MW de potencia instalada, convocado al amparo del Real Decreto 650\/2017, de 16 de junio.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20170628",
+            "diario_numero": "153",
+            "fecha_vigencia": "20170629",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/o\/2017\/06\/27\/etu615",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2017-7389"
+        },
+        {
+            "fecha_actualizacion": "20260205T140947Z",
+            "identificador": "BOE-A-2017-3880",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "9282",
+                "texto": "Ministerio de Energ\u00eda, Turismo y Agenda Digital"
+            },
+            "rango": {
+                "codigo": "1350",
+                "texto": "Orden"
+            },
+            "fecha_disposicion": "20170406",
+            "numero_oficial": "ETU\/315\/2017",
+            "titulo": "Orden ETU\/315\/2017, de 6 de abril, por la que se regula el procedimiento de asignaci\u00f3n del r\u00e9gimen retributivo espec\u00edfico en la convocatoria para nuevas instalaciones de producci\u00f3n de energ\u00eda el\u00e9ctrica a partir de fuentes de energ\u00eda renovables, convocada al amparo del Real Decreto 359\/2017, de 31 de marzo, y se aprueban sus par\u00e1metros retributivos.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20170408",
+            "diario_numero": "84",
+            "fecha_vigencia": "20170409",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/o\/2017\/04\/06\/etu315",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2017-3880"
+        },
+        {
+            "fecha_actualizacion": "20260205T140859Z",
+            "identificador": "BOE-A-2016-6995",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "9219",
+                "texto": "Ministerio de Industria, Energ\u00eda y Turismo"
+            },
+            "rango": {
+                "codigo": "1350",
+                "texto": "Orden"
+            },
+            "fecha_disposicion": "20160720",
+            "numero_oficial": "IET\/1209\/2016",
+            "titulo": "Orden IET\/1209\/2016, de 20 de julio, por la que se establecen los valores de la retribuci\u00f3n a la operaci\u00f3n correspondientes al segundo semestre natural del a\u00f1o 2016 y se aprueba una instalaci\u00f3n tipo y sus correspondientes par\u00e1metros retributivos.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20160721",
+            "diario_numero": "175",
+            "fecha_vigencia": "20160722",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/o\/2016\/07\/20\/iet1209",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2016-6995"
+        },
+        {
+            "fecha_actualizacion": "20260205T140816Z",
+            "identificador": "BOE-A-2015-13782",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "9219",
+                "texto": "Ministerio de Industria, Energ\u00eda y Turismo"
+            },
+            "rango": {
+                "codigo": "1350",
+                "texto": "Orden"
+            },
+            "fecha_disposicion": "20151217",
+            "numero_oficial": "IET\/2735\/2015",
+            "titulo": "Orden IET\/2735\/2015, de 17 de diciembre, por la que se establecen los peajes de acceso de energ\u00eda el\u00e9ctrica para 2016 y se aprueban determinadas instalaciones tipo y par\u00e1metros retributivos de instalaciones de producci\u00f3n de energ\u00eda el\u00e9ctrica a partir de fuentes de energ\u00eda renovables, cogeneraci\u00f3n y residuos.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20151218",
+            "diario_numero": "302",
+            "fecha_vigencia": "20160101",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/o\/2015\/12\/17\/iet2735",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2015-13782"
+        },
+        {
+            "fecha_actualizacion": "20260205T140729Z",
+            "identificador": "BOE-A-2015-11432",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "9219",
+                "texto": "Ministerio de Industria, Energ\u00eda y Turismo"
+            },
+            "rango": {
+                "codigo": "1350",
+                "texto": "Orden"
+            },
+            "fecha_disposicion": "20151023",
+            "numero_oficial": "IET\/2212\/2015",
+            "titulo": "Orden IET\/2212\/2015, de 23 de octubre, por la que se regula el procedimiento de asignaci\u00f3n del r\u00e9gimen retributivo espec\u00edfico en la convocatoria para nuevas instalaciones de producci\u00f3n de energ\u00eda el\u00e9ctrica a partir de biomasa situadas en el sistema el\u00e9ctrico peninsular y para instalaciones de tecnolog\u00eda e\u00f3lica, convocada al amparo del Real Decreto 947\/2015, de 16 de octubre, y se aprueban sus par\u00e1metros retributivos.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20151024",
+            "diario_numero": "255",
+            "fecha_vigencia": "20151025",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/o\/2015\/10\/23\/iet2212",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2015-11432"
+        },
+        {
+            "fecha_actualizacion": "20260205T140609Z",
+            "identificador": "BOE-A-2015-7594",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "9219",
+                "texto": "Ministerio de Industria, Energ\u00eda y Turismo"
+            },
+            "rango": {
+                "codigo": "1350",
+                "texto": "Orden"
+            },
+            "fecha_disposicion": "20150702",
+            "numero_oficial": "IET\/1345\/2015",
+            "titulo": "Orden IET\/1345\/2015, de 2 de julio, por la que se establece la metodolog\u00eda de actualizaci\u00f3n de la retribuci\u00f3n a la operaci\u00f3n de las instalaciones con r\u00e9gimen retributivo espec\u00edfico.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20150707",
+            "diario_numero": "161",
+            "fecha_vigencia": "20150801",
+            "vigencia_agotada": "S",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/o\/2015\/07\/02\/iet1345",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2015-7594"
+        },
+        {
+            "fecha_actualizacion": "20260205T135847Z",
+            "identificador": "BOE-A-2015-7593",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "9219",
+                "texto": "Ministerio de Industria, Energ\u00eda y Turismo"
+            },
+            "rango": {
+                "codigo": "1350",
+                "texto": "Orden"
+            },
+            "fecha_disposicion": "20150702",
+            "numero_oficial": "IET\/1344\/2015",
+            "titulo": "Orden IET\/1344\/2015, de 2 de julio, por la que se aprueban las instalaciones tipo y sus correspondientes par\u00e1metros retributivos, aplicables a determinadas instalaciones de producci\u00f3n de energ\u00eda el\u00e9ctrica a partir de fuentes de energ\u00eda renovables, cogeneraci\u00f3n y residuos.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20150707",
+            "diario_numero": "161",
+            "fecha_vigencia": "20150708",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/o\/2015\/07\/02\/iet1344",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2015-7593"
+        },
+        {
+            "fecha_actualizacion": "20260205T135811Z",
+            "identificador": "BOE-A-2014-8447",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "9219",
+                "texto": "Ministerio de Industria, Energ\u00eda y Turismo"
+            },
+            "rango": {
+                "codigo": "1350",
+                "texto": "Orden"
+            },
+            "fecha_disposicion": "20140801",
+            "numero_oficial": "IET\/1459\/2014",
+            "titulo": "Orden IET\/1459\/2014, de 1 de agosto, por la que se aprueban los par\u00e1metros retributivos y se establece el mecanismo de asignaci\u00f3n del r\u00e9gimen retributivo espec\u00edfico para nuevas instalaciones e\u00f3licas y fotovoltaicas en los sistemas el\u00e9ctricos de los territorios no peninsulares.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20140805",
+            "diario_numero": "189",
+            "fecha_vigencia": "20140806",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/o\/2014\/08\/01\/iet1459",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2014-8447"
+        },
+        {
+            "fecha_actualizacion": "20260205T135714Z",
+            "identificador": "BOE-A-2014-6495",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "9219",
+                "texto": "Ministerio de Industria, Energ\u00eda y Turismo"
+            },
+            "rango": {
+                "codigo": "1350",
+                "texto": "Orden"
+            },
+            "fecha_disposicion": "20140616",
+            "numero_oficial": "IET\/1045\/2014",
+            "titulo": "Orden IET\/1045\/2014, de 16 de junio, por la que se aprueban los par\u00e1metros retributivos de las instalaciones tipo aplicables a determinadas instalaciones de producci\u00f3n de energ\u00eda el\u00e9ctrica a partir de fuentes de energ\u00eda renovables, cogeneraci\u00f3n y residuos.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20140620",
+            "diario_numero": "150",
+            "fecha_vigencia": "20140621",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/o\/2014\/06\/16\/iet1045",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2014-6495"
+        },
+        {
+            "fecha_actualizacion": "20260205T132850Z",
+            "identificador": "BOE-A-2024-11291",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "9575",
+                "texto": "Ministerio para la Transici\u00f3n Ecol\u00f3gica y el Reto Demogr\u00e1fico"
+            },
+            "rango": {
+                "codigo": "1350",
+                "texto": "Orden"
+            },
+            "fecha_disposicion": "20240531",
+            "numero_oficial": "TED\/526\/2024",
+            "titulo": "Orden TED\/526\/2024, de 31 de mayo, por la que se establece la metodolog\u00eda de actualizaci\u00f3n de la retribuci\u00f3n a la operaci\u00f3n de las instalaciones tipo de generaci\u00f3n de energ\u00eda el\u00e9ctrica cuyos costes de explotaci\u00f3n dependan esencialmente del precio del combustible y se actualizan sus valores de retribuci\u00f3n a la operaci\u00f3n de aplicaci\u00f3n a partir del 1 de enero de 2024.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20240604",
+            "diario_numero": "135",
+            "fecha_vigencia": "20240605",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/o\/2024\/05\/31\/ted526",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2024-11291"
+        },
+        {
+            "fecha_actualizacion": "20260205T130604Z",
+            "identificador": "BOE-A-2025-1329",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "7320",
+                "texto": "Ministerio del Interior"
+            },
+            "rango": {
+                "codigo": "1370",
+                "texto": "Resoluci\u00f3n"
+            },
+            "fecha_disposicion": "20250120",
+            "titulo": "Resoluci\u00f3n de 20 de enero de 2025, de la Direcci\u00f3n General de Tr\u00e1fico, por la que se establecen medidas especiales de regulaci\u00f3n del tr\u00e1fico durante el a\u00f1o 2025.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20250125",
+            "diario_numero": "22",
+            "fecha_vigencia": "20250205",
+            "vigencia_agotada": "S",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/res\/2025\/01\/20\/(1)",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2025-1329"
+        },
+        {
+            "fecha_actualizacion": "20260205T123743Z",
+            "identificador": "BOE-A-2025-1220",
+            "ambito": {
+                "codigo": "2",
+                "texto": "Auton\u00f3mico"
+            },
+            "departamento": {
+                "codigo": "8140",
+                "texto": "Comunidad Aut\u00f3noma del Pa\u00eds Vasco"
+            },
+            "rango": {
+                "codigo": "1370",
+                "texto": "Resoluci\u00f3n"
+            },
+            "fecha_disposicion": "20250110",
+            "titulo": "Resoluci\u00f3n de 10 de enero de 2025, de la Direcci\u00f3n de Tr\u00e1fico, del Departamento de Seguridad, por la que se establecen medidas especiales de regulaci\u00f3n de tr\u00e1fico durante el a\u00f1o 2025 en la Comunidad Aut\u00f3noma del Pa\u00eds Vasco.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20250124",
+            "diario_numero": "21",
+            "fecha_vigencia": "20250205",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es-pv\/res\/2025\/01\/10\/(1)",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2025-1220"
+        },
+        {
+            "fecha_actualizacion": "20260205T111858Z",
+            "identificador": "BOE-A-2026-2622",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "9590",
+                "texto": "Ministerio de Educaci\u00f3n, Formaci\u00f3n Profesional y Deportes"
+            },
+            "rango": {
+                "codigo": "1340",
+                "texto": "Real Decreto"
+            },
+            "fecha_disposicion": "20260204",
+            "numero_oficial": "68\/2026",
+            "titulo": "Real Decreto 68\/2026, de 4 de febrero, por el que se regula la inspecci\u00f3n educativa.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20260205",
+            "diario_numero": "32",
+            "fecha_vigencia": "20260225",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/rd\/2026\/02\/04\/68",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2026-2622"
+        },
+        {
+            "fecha_actualizacion": "20260205T111603Z",
+            "identificador": "BOE-A-2010-1708",
+            "ambito": {
+                "codigo": "2",
+                "texto": "Auton\u00f3mico"
+            },
+            "departamento": {
+                "codigo": "8090",
+                "texto": "Comunidad Aut\u00f3noma de Galicia"
+            },
+            "rango": {
+                "codigo": "1300",
+                "texto": "Ley"
+            },
+            "fecha_disposicion": "20091222",
+            "numero_oficial": "8\/2009",
+            "titulo": "Ley 8\/2009, de 22 de diciembre, por la que se regula el aprovechamiento e\u00f3lico en Galicia y se crean el canon e\u00f3lico y el Fondo de Compensaci\u00f3n Ambiental.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20100204",
+            "diario_numero": "30",
+            "fecha_vigencia": "20091230",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "4",
+                "texto": "Desactualizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es-ga\/l\/2009\/12\/22\/8",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2010-1708"
+        },
+        {
+            "fecha_actualizacion": "20260205T110548Z",
+            "identificador": "BOE-A-2006-13371",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "5130",
+                "texto": "Ministerio de Econom\u00eda y Hacienda"
+            },
+            "rango": {
+                "codigo": "1340",
+                "texto": "Real Decreto"
+            },
+            "fecha_disposicion": "20060721",
+            "numero_oficial": "887\/2006",
+            "titulo": "Real Decreto 887\/2006, de 21 de julio, por el que se aprueba el Reglamento de la Ley 38\/2003, de 17 de noviembre, General de Subvenciones.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20060725",
+            "diario_numero": "176",
+            "fecha_vigencia": "20061025",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/rd\/2006\/07\/21\/887",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2006-13371"
+        },
+        {
+            "fecha_actualizacion": "20260205T103456Z",
+            "identificador": "BOE-A-2025-2145",
+            "ambito": {
+                "codigo": "2",
+                "texto": "Auton\u00f3mico"
+            },
+            "departamento": {
+                "codigo": "8090",
+                "texto": "Comunidad Aut\u00f3noma de Galicia"
+            },
+            "rango": {
+                "codigo": "1300",
+                "texto": "Ley"
+            },
+            "fecha_disposicion": "20241227",
+            "numero_oficial": "5\/2024",
+            "titulo": "Ley 5\/2024, de 27 de diciembre, de medidas fiscales y administrativas.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20250206",
+            "diario_numero": "32",
+            "fecha_vigencia": "20250101",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "4",
+                "texto": "Desactualizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es-ga\/l\/2024\/12\/27\/5",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2025-2145"
+        },
+        {
+            "fecha_actualizacion": "20260205T102947Z",
+            "identificador": "BOE-A-2015-10566",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "7723",
+                "texto": "Jefatura del Estado"
+            },
+            "rango": {
+                "codigo": "1300",
+                "texto": "Ley"
+            },
+            "fecha_disposicion": "20151001",
+            "numero_oficial": "40\/2015",
+            "titulo": "Ley 40\/2015, de 1 de octubre, de R\u00e9gimen Jur\u00eddico del Sector P\u00fablico.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20151002",
+            "diario_numero": "236",
+            "fecha_vigencia": "20161002",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/l\/2015\/10\/01\/40",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2015-10566"
+        },
+        {
+            "fecha_actualizacion": "20260205T100833Z",
+            "identificador": "BOE-A-2019-6995",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "9569",
+                "texto": "Ministerio de la Presidencia, Relaciones con las Cortes e Igualdad"
+            },
+            "rango": {
+                "codigo": "1340",
+                "texto": "Real Decreto"
+            },
+            "fecha_disposicion": "20190426",
+            "numero_oficial": "312\/2019",
+            "titulo": "Real Decreto 312\/2019, de 26 de abril, por el que se aprueba el Estatuto del Organismo Aut\u00f3nomo Centro de Estudios Jur\u00eddicos.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20190511",
+            "diario_numero": "113",
+            "fecha_vigencia": "20190512",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/rd\/2019\/04\/26\/312",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2019-6995"
+        },
+        {
+            "fecha_actualizacion": "20260205T095205Z",
+            "identificador": "BOE-A-2009-807",
+            "ambito": {
+                "codigo": "2",
+                "texto": "Auton\u00f3mico"
+            },
+            "departamento": {
+                "codigo": "8090",
+                "texto": "Comunidad Aut\u00f3noma de Galicia"
+            },
+            "rango": {
+                "codigo": "1300",
+                "texto": "Ley"
+            },
+            "fecha_disposicion": "20081203",
+            "numero_oficial": "13\/2008",
+            "titulo": "Ley 13\/2008, de 3 de diciembre, de servicios sociales de Galicia.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20090117",
+            "diario_numero": "15",
+            "fecha_vigencia": "20090318",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "4",
+                "texto": "Desactualizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es-ga\/l\/2008\/12\/03\/13",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2009-807"
+        },
+        {
+            "fecha_actualizacion": "20260205T095038Z",
+            "identificador": "BOE-A-2026-2625",
+            "ambito": {
+                "codigo": "2",
+                "texto": "Auton\u00f3mico"
+            },
+            "departamento": {
+                "codigo": "8140",
+                "texto": "Comunidad Aut\u00f3noma del Pa\u00eds Vasco"
+            },
+            "rango": {
+                "codigo": "1370",
+                "texto": "Resoluci\u00f3n"
+            },
+            "fecha_disposicion": "20260109",
+            "titulo": "Resoluci\u00f3n de 9 de enero de 2026, de la Direcci\u00f3n de Tr\u00e1fico, del Departamento de Seguridad, por la que se establecen medidas especiales de regulaci\u00f3n de tr\u00e1fico durante el a\u00f1o 2026 en la Comunidad Aut\u00f3noma del Pa\u00eds Vasco.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20260205",
+            "diario_numero": "32",
+            "fecha_vigencia": "20260217",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es-pv\/res\/2026\/01\/09\/(1)",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2026-2625"
+        },
+        {
+            "fecha_actualizacion": "20260205T094125Z",
+            "identificador": "BOE-A-2022-14275",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "9279",
+                "texto": "Ministerio de Hacienda y Funci\u00f3n P\u00fablica"
+            },
+            "rango": {
+                "codigo": "1350",
+                "texto": "Orden"
+            },
+            "fecha_disposicion": "20220830",
+            "numero_oficial": "HFP\/826\/2022",
+            "titulo": "Orden HFP\/826\/2022, de 30 de agosto, por la que se aprueba el modelo 587 \"Impuesto sobre los Gases Fluorados de Efecto Invernadero. Autoliquidaci\u00f3n\" y el modelo A23 \"Impuesto sobre los Gases Fluorados de Efecto Invernadero. Solicitud de devoluci\u00f3n\", se determinan la forma y procedimiento para la presentaci\u00f3n de los mismos, y se regulan la inscripci\u00f3n en el Registro territorial y la llevanza de la contabilidad de existencias.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20220831",
+            "diario_numero": "209",
+            "fecha_vigencia": "20220901",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/o\/2022\/08\/30\/hfp826",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2022-14275"
+        },
+        {
+            "fecha_actualizacion": "20260205T091350Z",
+            "identificador": "BOE-A-2007-4372",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "4230",
+                "texto": "Ministerio de Educaci\u00f3n y Ciencia"
+            },
+            "rango": {
+                "codigo": "1340",
+                "texto": "Real Decreto"
+            },
+            "fecha_disposicion": "20070223",
+            "numero_oficial": "276\/2007",
+            "titulo": "Real Decreto 276\/2007, de 23 de febrero, por el que se aprueba el Reglamento de ingreso, accesos y adquisici\u00f3n de nuevas especialidades en los cuerpos docentes a que se refiere la Ley Org\u00e1nica 2\/2006, de 3 de mayo, de Educaci\u00f3n, y se regula el r\u00e9gimen transitorio de ingreso a que se refiere la disposici\u00f3n transitoria decimos\u00e9ptima de la citada ley.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20070302",
+            "diario_numero": "53",
+            "fecha_vigencia": "20070303",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/rd\/2007\/02\/23\/276",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2007-4372"
+        },
+        {
+            "fecha_actualizacion": "20260205T084905Z",
+            "identificador": "BOE-A-1995-27975",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "4230",
+                "texto": "Ministerio de Educaci\u00f3n y Ciencia"
+            },
+            "rango": {
+                "codigo": "1340",
+                "texto": "Real Decreto"
+            },
+            "fecha_disposicion": "19951228",
+            "numero_oficial": "2193\/1995",
+            "titulo": "Real Decreto 2193\/1995, de 28 de diciembre, por el que se establecen las normas b\u00e1sicas para el acceso y la provisi\u00f3n de puestos de trabajo en el Cuerpo de Inspectores de Educaci\u00f3n y la integraci\u00f3n en el mismo de los actuales Inspectores.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "19951230",
+            "diario_numero": "312",
+            "fecha_vigencia": "19951231",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/rd\/1995\/12\/28\/2193",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-1995-27975"
+        },
+        {
+            "fecha_actualizacion": "20260205T082428Z",
+            "identificador": "BOE-A-2007-8186",
+            "ambito": {
+                "codigo": "2",
+                "texto": "Auton\u00f3mico"
+            },
+            "departamento": {
+                "codigo": "8040",
+                "texto": "Comunidad Aut\u00f3noma de Cantabria"
+            },
+            "rango": {
+                "codigo": "1300",
+                "texto": "Ley"
+            },
+            "fecha_disposicion": "20070327",
+            "numero_oficial": "2\/2007",
+            "titulo": "Ley 2\/2007, de 27 de marzo, de derechos y servicios sociales.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20070419",
+            "diario_numero": "94",
+            "fecha_vigencia": "20070703",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es-cb\/l\/2007\/03\/27\/2",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2007-8186"
+        },
+        {
+            "fecha_actualizacion": "20260205T080746Z",
+            "identificador": "BOE-A-2025-10884",
+            "ambito": {
+                "codigo": "2",
+                "texto": "Auton\u00f3mico"
+            },
+            "departamento": {
+                "codigo": "8040",
+                "texto": "Comunidad Aut\u00f3noma de Cantabria"
+            },
+            "rango": {
+                "codigo": "1300",
+                "texto": "Ley"
+            },
+            "fecha_disposicion": "20250402",
+            "numero_oficial": "2\/2025",
+            "titulo": "Ley 2\/2025, de 2 de abril, de Simplificaci\u00f3n Administrativa de Cantabria.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20250602",
+            "diario_numero": "132",
+            "fecha_vigencia": "20250405",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es-cb\/l\/2025\/04\/02\/2",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2025-10884"
+        }
+    ]
+}

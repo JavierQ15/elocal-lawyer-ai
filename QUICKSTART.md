@@ -43,12 +43,37 @@ Open in your browser:
 
 ## Step 4: Load Data (Varies by data volume)
 
-1. Open Airflow UI: http://localhost:8080
-2. Find the `boe_initial_load` DAG
-3. Toggle it ON (switch on left)
-4. Click the ▶ button to trigger
+**Option A - Using Make (Easiest):**
 
-Watch the progress in the Graph view.
+```bash
+# Load data from January 2024
+make trigger-sync FROM=2024-01-01 TO=2024-01-31
+```
+
+**Option B - Using PowerShell Script:**
+
+```powershell
+.\scripts\trigger_boe_sync.ps1 -FromDate "2024-01-01" -ToDate "2024-01-31"
+```
+
+**Option C - Using curl:**
+
+```bash
+curl -X POST "http://localhost:8080/api/v1/dags/boe_sync_consolidada/dagRuns" \
+  -H "Content-Type: application/json" \
+  -u "admin:admin" \
+  -d '{"conf": {"from_date": "2024-01-01", "to_date": "2024-01-31"}}'
+```
+
+**Option D - Using Airflow UI (yesterday's data only):**
+
+1. Open Airflow UI: http://localhost:8080
+2. Find the `boe_sync_consolidada` DAG
+3. Toggle it ON and click ▶
+
+**Note:** The `boe_initial_load` DAG is a placeholder and won't load any data.
+
+Watch the progress at: http://localhost:8080/dags/boe_sync_consolidada/grid
 
 ## Step 5: Test the API (30 seconds)
 
@@ -94,6 +119,13 @@ make init          # Try again
 - Wait 30-60 seconds after `make up`
 - Check logs: `make logs-airflow`
 - Verify port 8080 is not in use
+
+### DAG fails with "conn_id isn't defined" error
+If you see `The conn_id 'postgres_default' isn't defined`:
+```bash
+make restart       # Restart all services
+```
+This ensures Airflow loads the connection configurations from docker-compose.yml.
 
 ### API returns empty results
 - Make sure data is loaded (run `boe_initial_load` DAG)

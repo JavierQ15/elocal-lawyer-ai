@@ -95,6 +95,25 @@ def ensure_collection_exists():
     ensure_collections_exist()
 
 
+def hash_to_uuid(hash_string: str) -> str:
+    """
+    Convert a hash string (SHA256) to a valid UUID format for Qdrant.
+    
+    Qdrant requires IDs to be either integers or UUIDs. This function
+    converts our SHA256 hashes (64 hex chars) to valid UUID format.
+    
+    Args:
+        hash_string: SHA256 hash string (64 hex chars)
+        
+    Returns:
+        UUID formatted string (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
+    """
+    # Use first 32 hex chars of hash to create UUID
+    uuid_str = hash_string[:32]
+    # Format as standard UUID
+    return f"{uuid_str[:8]}-{uuid_str[8:12]}-{uuid_str[12:16]}-{uuid_str[16:20]}-{uuid_str[20:32]}"
+
+
 def generate_embeddings(text):
     """
     Generate embeddings for text using Ollama.
@@ -134,7 +153,7 @@ def upsert_point(
     
     Args:
         collection: Nombre de la colección
-        point_id: ID determinista del punto
+        point_id: ID determinista del punto (hash string like id_fragmento)
         vector: Vector de embeddings
         payload: Metadata del punto (NO incluir texto completo)
     """
@@ -142,10 +161,17 @@ def upsert_point(
     
     client = get_qdrant_client()
     
+    # Convert hash string to UUID format for Qdrant
+    # Qdrant expects either int or UUID, not arbitrary strings
+    uuid_id = hash_to_uuid(point_id)
+    
+    # Store original ID in payload for reference
+    payload_with_id = {**payload, '_original_id': point_id}
+    
     point = PointStruct(
-        id=point_id,
+        id=uuid_id,
         vector=vector,
-        payload=payload
+        payload=payload_with_id
     )
     
     client.upsert(
