@@ -2,7 +2,7 @@
 Unit tests for BOE Consolidada utilities.
 """
 import unittest
-from datetime import date
+from datetime import date, datetime
 import sys
 import os
 
@@ -402,6 +402,106 @@ class TestBOEConsolidadaClient(unittest.TestCase):
         self.assertEqual(result['versiones'][0]['fecha_vigencia_desde'], date(2018, 12, 7))
         self.assertIsNotNone(result['versiones'][0]['html'])
         self.assertEqual(result['versiones'][1]['fecha_vigencia_desde'], date(2020, 1, 1))
+    
+    def test_missing_ids_are_skipped(self):
+        """Test that normas/bloques without IDs are skipped gracefully."""
+        from utils.boe_consolidada_client import BOEConsolidadaClient
+        
+        client = BOEConsolidadaClient()
+        
+        # Test normas without identificador
+        response_normas = {
+            "status": {"code": "200", "text": "OK"},
+            "data": [
+                {
+                    "identificador": "BOE-A-2018-16673",
+                    "titulo": "Valid norma",
+                    "rango": {"texto": "Ley"}
+                },
+                {
+                    # Missing identificador
+                    "titulo": "Invalid norma without ID",
+                    "rango": {"texto": "Ley"}
+                },
+                {
+                    "identificador": "BOE-A-2019-12345",
+                    "titulo": "Another valid norma"
+                }
+            ]
+        }
+        
+        normas = client._parse_normas_json(response_normas)
+        
+        # Should only return normas with valid IDs
+        self.assertEqual(len(normas), 2)
+        self.assertEqual(normas[0]['id_norma'], "BOE-A-2018-16673")
+        self.assertEqual(normas[1]['id_norma'], "BOE-A-2019-12345")
+        
+        # Test bloques without identificador
+        response_indice = {
+            "status": {"code": "200", "text": "OK"},
+            "data": {
+                "identificador": "BOE-A-2018-16673",
+                "titulo": "Test norma",
+                "bloques": [
+                    {
+                        "identificador": "ART_1",
+                        "tipo": "Artículo",
+                        "titulo": "Valid bloque"
+                    },
+                    {
+                        # Missing identificador
+                        "tipo": "Artículo",
+                        "titulo": "Invalid bloque without ID"
+                    },
+                    {
+                        "identificador": "ART_2",
+                        "tipo": "Artículo",
+                        "titulo": "Another valid bloque"
+                    }
+                ]
+            }
+        }
+        
+        result = client._parse_indice_json(response_indice)
+        
+        # Should only return bloques with valid IDs
+        self.assertEqual(len(result['bloques']), 2)
+        self.assertEqual(result['bloques'][0]['id_bloque'], "ART_1")
+        self.assertEqual(result['bloques'][1]['id_bloque'], "ART_2")
+        
+        # Test versiones without html
+        response_bloque = {
+            "status": {"code": "200", "text": "OK"},
+            "data": {
+                "id_norma": "BOE-A-2018-16673",
+                "identificador_bloque": "ART_1",
+                "versiones": [
+                    {
+                        "id_norma_modificadora": "BOE-A-2018-16673",
+                        "fecha_vigencia": "20181207",
+                        "html": "<p>Valid version with HTML</p>"
+                    },
+                    {
+                        # Missing html
+                        "id_norma_modificadora": "BOE-A-2019-12345",
+                        "fecha_vigencia": "20190101"
+                    },
+                    {
+                        "id_norma_modificadora": "BOE-A-2020-12345",
+                        "fecha_vigencia": "20200101",
+                        "html": "<p>Another valid version</p>"
+                    }
+                ]
+            }
+        }
+        
+        result = client._parse_bloque_json(response_bloque)
+        
+        # Should only return versions with HTML content
+        self.assertEqual(len(result['versiones']), 2)
+        self.assertEqual(result['versiones'][0]['id_norma_modificadora'], "BOE-A-2018-16673")
+        self.assertEqual(result['versiones'][1]['id_norma_modificadora'], "BOE-A-2020-12345")
 
 
 

@@ -240,9 +240,17 @@ class BOEConsolidadaClient:
         # Get items from 'data' key (real API structure)
         items = data.get('data', [])
         
+        # Handle data as object or list - normalize to list
+        if isinstance(items, dict):
+            items = [items]
+        elif not isinstance(items, list):
+            items = []
+        
         # Fallback to legacy structure if 'data' not found
         if not items:
             items = data.get('items', []) or data.get('normas', [])
+            if isinstance(items, dict):
+                items = [items]
         
         logger.info(f"Parsing {len(items)} normas from JSON response")
         
@@ -353,14 +361,27 @@ class BOEConsolidadaClient:
             elif isinstance(data_content, dict):
                 actual_data = data_content
         
-        # Extract bloques array
-        bloques_list = actual_data.get('bloques', []) or actual_data.get('estructura', [])
+        # Extract bloques array - try multiple possible keys
+        bloques_list = (actual_data.get('bloques') or 
+                       actual_data.get('estructura') or 
+                       actual_data.get('indice') or [])
+        
+        # If actual_data is a list itself, treat it as bloques list
+        if not bloques_list and isinstance(actual_data, list):
+            bloques_list = actual_data
         
         for bloque_item in bloques_list:
             try:
+                # Extract tipo - can be dict or string
+                tipo_obj = bloque_item.get('tipo')
+                if isinstance(tipo_obj, dict):
+                    tipo = tipo_obj.get('texto') or tipo_obj.get('codigo')
+                else:
+                    tipo = tipo_obj
+                
                 bloque = {
                     'id_bloque': bloque_item.get('id') or bloque_item.get('identificador'),
-                    'tipo': bloque_item.get('tipo'),
+                    'tipo': tipo,
                     'titulo_bloque': bloque_item.get('titulo'),
                     'fecha_actualizacion_bloque': self._parse_datetime(
                         bloque_item.get('fecha_actualizacion')
@@ -435,8 +456,18 @@ class BOEConsolidadaClient:
             elif isinstance(data_content, dict):
                 actual_data = data_content
         
-        # Extract versiones array
-        versiones_list = actual_data.get('versiones', [])
+        # Extract versiones array - try multiple possible keys
+        versiones_list = (actual_data.get('versiones') or 
+                         actual_data.get('historico') or 
+                         actual_data.get('versions') or [])
+        
+        # If actual_data is a list itself, treat it as versiones list
+        if not versiones_list and isinstance(actual_data, list):
+            versiones_list = actual_data
+        
+        # Normalize versiones_list to list if it's a dict
+        if isinstance(versiones_list, dict):
+            versiones_list = [versiones_list]
         
         for version_item in versiones_list:
             try:
@@ -448,7 +479,10 @@ class BOEConsolidadaClient:
                     'fecha_vigencia_desde': self._parse_date(
                         version_item.get('fecha_vigencia_desde') or version_item.get('fecha_vigencia')
                     ),
-                    'html': version_item.get('contenido_html') or version_item.get('html') or version_item.get('texto')
+                    'html': (version_item.get('contenido_html') or 
+                            version_item.get('html') or 
+                            version_item.get('contenido') or 
+                            version_item.get('texto'))
                 }
                 # Only add versions with content
                 if version['html']:
