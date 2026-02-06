@@ -367,8 +367,14 @@ BOE_CONSOLIDADA_BLOQUE_PATH_TEMPLATE={base}/{id_norma}/bloques/{id_bloque}
 Después de configurar, valida que el cliente puede conectarse a la API real:
 
 ```bash
-# Ejecutar script de validación
+# Ejecutar script de validación (solo list_normas)
 python scripts/validate_boe_api.py
+
+# Probar list_normas + get_indice
+python scripts/validate_boe_api.py --norma BOE-A-2018-16673
+
+# Probar los 3 endpoints (list_normas, get_indice, get_bloque)
+python scripts/validate_boe_api.py --norma BOE-A-2018-16673 --bloque ART_1
 
 # O dentro del contenedor
 docker compose exec rag-api python /app/../scripts/validate_boe_api.py
@@ -376,8 +382,10 @@ docker compose exec rag-api python /app/../scripts/validate_boe_api.py
 
 Este script verificará:
 - Conectividad con la API del BOE
+- Muestra los primeros 3 identificadores de normas
+- Cuenta de bloques en el índice (si se proporciona --norma)
+- Cuenta de versiones y presencia de HTML (si se proporciona --norma y --bloque)
 - Que el parser produce resultados válidos
-- Estadísticas de los datos obtenidos
 
 ### GPU para Ollama
 

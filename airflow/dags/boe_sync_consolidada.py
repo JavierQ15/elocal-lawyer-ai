@@ -196,9 +196,12 @@ def sync_indices(**context):
                 if not row:
                     # Bloque nuevo
                     is_dirty = True
-                elif row[0] != fecha_actualizacion_bloque:
-                    # Bloque actualizado
-                    is_dirty = True
+                else:
+                    # Bloque actualizado - handle None comparison properly
+                    db_fecha = row[0]
+                    # Mark as dirty if dates differ (including when one is None and other isn't)
+                    if db_fecha != fecha_actualizacion_bloque:
+                        is_dirty = True
                 
                 # Upsert bloque
                 cursor.execute("""
@@ -278,11 +281,24 @@ def sync_bloques_batch(**context):
             
             # Procesar cada versión del bloque
             versiones = bloque_data.get('versiones', [])
+            
+            # Handle empty versiones list
+            if not versiones:
+                logger.info(f"No versions found for {id_norma}/{id_bloque}, skipping")
+                continue
+            
             logger.info(f"Found {len(versiones)} versions for {id_norma}/{id_bloque}")
             
             for version in versiones:
                 html = version.get('html', '')
                 if not html:
+                    logger.debug(f"Skipping version without HTML: {id_norma}/{id_bloque}")
+                    continue
+                
+                # Skip versions without fecha_vigencia_desde (required for validity)
+                fecha_vigencia_desde = version.get('fecha_vigencia_desde')
+                if not fecha_vigencia_desde:
+                    logger.warning(f"Skipping version without fecha_vigencia_desde: {id_norma}/{id_bloque}")
                     continue
                 
                 # Calcular hashes
@@ -294,7 +310,7 @@ def sync_bloques_batch(**context):
                 id_version = generate_id_version(
                     id_norma=id_norma,
                     id_bloque=id_bloque,
-                    fecha_vigencia_desde=version.get('fecha_vigencia_desde'),
+                    fecha_vigencia_desde=fecha_vigencia_desde,
                     id_norma_modificadora=version.get('id_norma_modificadora'),
                     hash_html=hash_html
                 )
@@ -328,7 +344,7 @@ def sync_bloques_batch(**context):
                     id_bloque,
                     version.get('id_norma_modificadora'),
                     version.get('fecha_publicacion_mod'),
-                    version.get('fecha_vigencia_desde'),
+                    fecha_vigencia_desde,
                     vigencia_hasta,
                     hash_html,
                     hash_texto
