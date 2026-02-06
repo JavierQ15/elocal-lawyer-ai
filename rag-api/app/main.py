@@ -32,16 +32,23 @@ class QueryRequest(BaseModel):
     question: str = Field(..., description="The question to ask about BOE legislation")
     max_results: int = Field(default=5, description="Maximum number of context documents to retrieve", ge=1, le=20)
     temperature: float = Field(default=0.7, description="LLM temperature for response generation", ge=0.0, le=2.0)
+    mode: str = Field(default="vigente", description="Query mode: 'vigente' (current) or 'historico' (historical)")
+    as_of_date: Optional[str] = Field(default=None, description="Date for historical queries (YYYY-MM-DD format)")
 
 
 class DocumentResult(BaseModel):
     """Model for a single document result."""
-    boe_id: str
-    title: str
+    id_fragmento: str
+    id_norma: str
+    id_bloque: Optional[str]
+    titulo_bloque: Optional[str]
+    articulo_ref: Optional[str]
     chunk_text: str
     score: float
-    publication_date: Optional[str]
-    url: Optional[str]
+    vigencia_desde: Optional[str]
+    vigencia_hasta: Optional[str]
+    url_html_consolidada: Optional[str]
+    url_bloque: Optional[str]
 
 
 class QueryResponse(BaseModel):
@@ -120,22 +127,57 @@ async def query_legislation(request: QueryRequest):
     """
     Query BOE legislation using RAG.
     
+    Supports two modes:
+    - vigente: Query current legislation
+    - historico: Query historical legislation as of a specific date
+    
     1. Generates embedding for the question
-    2. Searches for relevant document chunks in Qdrant
-    3. Retrieves full context from PostgreSQL
-    4. Generates answer using Ollama LLM
+    2. Searches for relevant fragments in Qdrant (vigente or historico collection)
+    3. Retrieves full context from PostgreSQL by id_fragmento
+    4. Generates answer using Ollama LLM with proper citations
     """
+    from datetime import datetime
+    from .embeddings import generate_embedding, search_vigente, search_historico
+    
     try:
+        # Validate mode
+        if request.mode not in ['vigente', 'historico']:
+            raise HTTPException(status_code=400, detail="Invalid mode. Must be 'vigente' or 'historico'")
+        
+        # Validate as_of_date for historico mode
+        as_of_date = None
+        if request.mode == 'historico':
+            if not request.as_of_date:
+                raise HTTPException(
+                    status_code=400, 
+                    detail="as_of_date is required for historico mode (format: YYYY-MM-DD)"
+                )
+            try:
+                as_of_date = datetime.strptime(request.as_of_date, '%Y-%m-%d').date()
+            except ValueError:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Invalid as_of_date format. Use YYYY-MM-DD"
+                )
+        
         # Generate embedding for the query
         query_embedding = generate_embedding(request.question)
         
-        # Search for similar vectors in Qdrant
-        search_results = search_vectors(query_embedding, limit=request.max_results)
+        # Search in appropriate collection
+        if request.mode == 'vigente':
+            search_results = search_vigente(query_embedding, limit=request.max_results)
+        else:
+            search_results = search_historico(query_embedding, as_of_date, limit=request.max_results)
         
         if not search_results:
-            raise HTTPException(status_code=404, detail="No relevant documents found")
+            # No hay evidencia suficiente
+            return QueryResponse(
+                answer="No consta en el contexto proporcionado. No se encontró legislación relevante para su consulta.",
+                sources=[],
+                query=request.question
+            )
         
-        # Retrieve full document information from PostgreSQL
+        # Retrieve full fragmento information from PostgreSQL
         conn = get_db_connection()
         cursor = conn.cursor()
         
@@ -143,45 +185,86 @@ async def query_legislation(request: QueryRequest):
         context_texts = []
         
         for result in search_results:
-            document_id = result.payload.get('document_id')
-            chunk_index = result.payload.get('chunk_index')
+            id_fragmento = result.payload.get('id_fragmento')
             
+            # Recuperar texto desde Postgres (no desde payload de Qdrant)
             cursor.execute("""
                 SELECT 
-                    d.boe_id,
-                    d.title,
-                    d.publication_date,
-                    d.url,
-                    c.chunk_text
-                FROM document_chunks c
-                JOIN boe_documents d ON c.document_id = d.id
-                WHERE c.document_id = %s AND c.chunk_index = %s
-            """, (document_id, chunk_index))
+                    bf.id_fragmento,
+                    bf.texto_normalizado,
+                    bf.articulo_ref,
+                    bv.id_norma,
+                    bv.id_bloque,
+                    bv.fecha_vigencia_desde,
+                    bv.vigencia_hasta,
+                    bb.titulo_bloque,
+                    bn.url_html_consolidada,
+                    bb.url_bloque,
+                    bn.titulo as norma_titulo
+                FROM boe_fragmento bf
+                JOIN boe_version bv ON bf.id_version = bv.id_version
+                JOIN boe_bloque bb ON bv.id_norma = bb.id_norma AND bv.id_bloque = bb.id_bloque
+                JOIN boe_norma bn ON bv.id_norma = bn.id_norma
+                WHERE bf.id_fragmento = %s
+            """, (id_fragmento,))
             
             row = cursor.fetchone()
             if row:
-                boe_id, title, pub_date, url, chunk_text = row
+                (frag_id, texto, articulo_ref, id_norma, id_bloque, 
+                 vigencia_desde, vigencia_hasta, titulo_bloque, 
+                 url_html, url_bloque, norma_titulo) = row
                 
                 sources.append(DocumentResult(
-                    boe_id=boe_id,
-                    title=title,
-                    chunk_text=chunk_text,
+                    id_fragmento=frag_id,
+                    id_norma=id_norma,
+                    id_bloque=id_bloque,
+                    titulo_bloque=titulo_bloque,
+                    articulo_ref=articulo_ref,
+                    chunk_text=texto,
                     score=result.score,
-                    publication_date=str(pub_date) if pub_date else None,
-                    url=url
+                    vigencia_desde=vigencia_desde.isoformat() if vigencia_desde else None,
+                    vigencia_hasta=vigencia_hasta.isoformat() if vigencia_hasta else None,
+                    url_html_consolidada=url_html,
+                    url_bloque=url_bloque
                 ))
                 
-                context_texts.append(f"Documento: {title}\nContenido: {chunk_text}")
+                # Preparar contexto con citas
+                context_piece = f"""
+Fuente: {norma_titulo}
+Bloque: {titulo_bloque or id_bloque}
+{f'Artículo: {articulo_ref}' if articulo_ref else ''}
+Vigencia: desde {vigencia_desde} {f'hasta {vigencia_hasta}' if vigencia_hasta else '(vigente)'}
+URL: {url_html or url_bloque}
+
+Contenido:
+{texto}
+"""
+                context_texts.append(context_piece)
         
         cursor.close()
         conn.close()
         
+        if not sources:
+            return QueryResponse(
+                answer="No consta en el contexto proporcionado. No se pudo recuperar la información de las fuentes.",
+                sources=[],
+                query=request.question
+            )
+        
         # Generate response using LLM
         context = "\n\n---\n\n".join(context_texts)
+        
+        # Añadir instrucción explícita sobre citas
+        system_prompt = f"""Eres un asistente especializado en legislación española del BOE.
+Responde la pregunta basándote ÚNICAMENTE en el contexto proporcionado.
+Si la información no está en el contexto, responde: "No consta en el contexto proporcionado."
+IMPORTANTE: Cita siempre las fuentes específicas (norma, artículo, fecha de vigencia) al responder."""
+        
         answer = generate_response(
             question=request.question,
             context=context,
-            temperature=request.temperature
+            temperature=request.temperature,
+            system_prompt=system_prompt
         )
         
         return QueryResponse(
@@ -190,6 +273,8 @@ async def query_legislation(request: QueryRequest):
             query=request.question
         )
         
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing query: {str(e)}")
 
