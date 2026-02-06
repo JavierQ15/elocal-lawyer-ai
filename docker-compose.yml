@@ -24,7 +24,7 @@ services:
 
   # Qdrant - Vector Database for embeddings
   qdrant:
-    image: qdrant/qdrant:latest
+    image: qdrant/qdrant:v1.7.4
     container_name: boe-qdrant
     environment:
       - QDRANT_ALLOW_RECOVERY_MODE=true
@@ -43,7 +43,7 @@ services:
 
   # Ollama - Local LLM for embeddings and generation
   ollama:
-    image: ollama/ollama:latest
+    image: ollama/ollama:0.1.25
     container_name: boe-ollama
     volumes:
       - ollama_data:/root/.ollama
@@ -58,6 +58,7 @@ services:
       retries: 5
     networks:
       - boe-network
+    # GPU support for docker-compose (not swarm mode)
     deploy:
       resources:
         reservations:
@@ -110,8 +111,11 @@ services:
       - POSTGRES_DB=${POSTGRES_DB:-boe_legislation}
       - QDRANT_HOST=qdrant
       - QDRANT_PORT=6333
+      - QDRANT_COLLECTION_HIST=${QDRANT_COLLECTION_HIST:-boe_historico_all}
+      - QDRANT_COLLECTION_VIG=${QDRANT_COLLECTION_VIG:-boe_vigente_latest}
       - OLLAMA_HOST=ollama
       - OLLAMA_PORT=11434
+      - AIRFLOW_CONN_BOE_POSTGRES=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-boe_legislation}
     volumes:
       - ./airflow/dags:/opt/airflow/dags
       - ./airflow/logs:/opt/airflow/logs
@@ -153,8 +157,11 @@ services:
       - POSTGRES_DB=${POSTGRES_DB:-boe_legislation}
       - QDRANT_HOST=qdrant
       - QDRANT_PORT=6333
+      - QDRANT_COLLECTION_HIST=${QDRANT_COLLECTION_HIST:-boe_historico_all}
+      - QDRANT_COLLECTION_VIG=${QDRANT_COLLECTION_VIG:-boe_vigente_latest}
       - OLLAMA_HOST=ollama
       - OLLAMA_PORT=11434
+      - AIRFLOW_CONN_BOE_POSTGRES=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-boe_legislation}
     volumes:
       - ./airflow/dags:/opt/airflow/dags
       - ./airflow/logs:/opt/airflow/logs
@@ -219,6 +226,8 @@ services:
       - QDRANT_HOST=qdrant
       - QDRANT_PORT=6333
       - QDRANT_COLLECTION_NAME=${QDRANT_COLLECTION_NAME:-boe_legislation}
+      - QDRANT_COLLECTION_HIST=${QDRANT_COLLECTION_HIST:-boe_historico_all}
+      - QDRANT_COLLECTION_VIG=${QDRANT_COLLECTION_VIG:-boe_vigente_latest}
       - OLLAMA_HOST=ollama
       - OLLAMA_PORT=11434
       - OLLAMA_EMBEDDING_MODEL=${OLLAMA_EMBEDDING_MODEL:-nomic-embed-text}
