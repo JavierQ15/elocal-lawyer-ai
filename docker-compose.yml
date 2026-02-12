@@ -1,66 +1,62 @@
-version: '3.8'
+﻿x-pipeline-common: &pipeline-common
+  build:
+    context: .
+    dockerfile: docker/Dockerfile.pipeline
+  profiles: ["pipeline"]
+  env_file:
+    - .env
+  environment:
+    WORKSPACE_ROOT: /repo
+    REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+    MONGO_URL: ${MONGO_URL:-mongodb://mongodb:27017/boe}
+    MONGO_URI: ${MONGO_URI:-mongodb://mongodb:27017}
+    MONGO_DB: ${MONGO_DB:-boe}
+    QDRANT_URL: ${QDRANT_URL:-http://qdrant:6333}
+    QDRANT_COLLECTION: ${QDRANT_COLLECTION:-boe_chunks}
+    LOCAL_EMBEDDINGS_URL: ${LOCAL_EMBEDDINGS_URL:-http://ollama:11434/api/embeddings}
+  depends_on:
+    - mongodb
+    - redis
+    - qdrant
+    - ollama
+  volumes:
+    - ./data:/repo/data
 
 services:
-  # PostgreSQL - Source of Truth for BOE legislation data
-  postgres:
-    image: postgres:15-alpine
-    container_name: boe-postgres
+  mongodb:
+    image: mongo:8.0
+    restart: unless-stopped
     environment:
-      - POSTGRES_USER=${POSTGRES_USER:-postgres}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
-      - POSTGRES_DB=${POSTGRES_DB:-boe_legislation}
+      MONGO_INITDB_DATABASE: boe
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./postgres/init:/docker-entrypoint-initdb.d
+      - mongo_data:/data/db
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - boe-network
+      - "27017:27017"
 
-  # Qdrant - Vector Database for embeddings
+  redis:
+    image: redis:7.4-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+
   qdrant:
-    image: qdrant/qdrant:v1.7.4
-    container_name: boe-qdrant
-    environment:
-      - QDRANT_ALLOW_RECOVERY_MODE=true
+    image: qdrant/qdrant:v1.16.2
+    restart: unless-stopped
     volumes:
       - qdrant_data:/qdrant/storage
     ports:
-      - "${QDRANT_PORT:-6333}:6333"
-      - "${QDRANT_GRPC_PORT:-6334}:6334"
-    healthcheck:
-      test: ["CMD-SHELL", "timeout 10s bash -c ':> /dev/tcp/127.0.0.1/6333' || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
-    networks:
-      - boe-network
+      - "6333:6333"
 
-  # Ollama - Local LLM for embeddings and generation
   ollama:
-    image: ollama/ollama:0.15.5
-    container_name: boe-ollama
+    image: ollama/ollama:latest
+    restart: unless-stopped
     volumes:
       - ollama_data:/root/.ollama
     ports:
-      - "${OLLAMA_PORT:-11434}:11434"
-    environment:
-      - OLLAMA_HOST=0.0.0.0
-    healthcheck:
-      test: ["CMD-SHELL", "timeout 10s bash -c ':> /dev/tcp/127.0.0.1/11434' || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
-    networks:
-      - boe-network
-    # GPU support for docker-compose (not swarm mode)
+      - "11434:11434"
     deploy:
       resources:
         reservations:
@@ -68,215 +64,133 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
-
-  # Airflow PostgreSQL database
-  airflow-postgres:
-    image: postgres:15-alpine
-    container_name: boe-airflow-postgres
-    environment:
-      - POSTGRES_USER=${AIRFLOW_POSTGRES_USER:-airflow}
-      - POSTGRES_PASSWORD=${AIRFLOW_POSTGRES_PASSWORD:-airflow}
-      - POSTGRES_DB=${AIRFLOW_POSTGRES_DB:-airflow}
-    volumes:
-      - airflow_postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${AIRFLOW_POSTGRES_USER:-airflow}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - boe-network
-
-  # Airflow Webserver
-  airflow-webserver:
-    build:
-      context: ./airflow
-      dockerfile: Dockerfile
-    container_name: boe-airflow-webserver
-    depends_on:
-      airflow-postgres:
-        condition: service_healthy
-      airflow-init:
-        condition: service_completed_successfully
-    environment:
-      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
-      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${AIRFLOW_POSTGRES_USER:-airflow}:${AIRFLOW_POSTGRES_PASSWORD:-airflow}@airflow-postgres:5432/${AIRFLOW_POSTGRES_DB:-airflow}
-      - AIRFLOW__CORE__FERNET_KEY=${AIRFLOW_FERNET_KEY}
-      - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=true
-      - AIRFLOW__CORE__LOAD_EXAMPLES=false
-      - AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session
-      - AIRFLOW__WEBSERVER__SECRET_KEY=${AIRFLOW_SECRET_KEY}
-      - POSTGRES_HOST=postgres
-      - POSTGRES_PORT=5432
-      - POSTGRES_USER=${POSTGRES_USER:-postgres}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
-      - POSTGRES_DB=${POSTGRES_DB:-boe_legislation}
-      - QDRANT_HOST=qdrant
-      - QDRANT_PORT=6333
-      - QDRANT_COLLECTION_HIST=${QDRANT_COLLECTION_HIST:-boe_historico_all}
-      - QDRANT_COLLECTION_VIG=${QDRANT_COLLECTION_VIG:-boe_vigente_latest}
-      - OLLAMA_HOST=ollama
-      - OLLAMA_PORT=11434
-      - BOE_API_BASE_URL=${BOE_API_BASE_URL:-https://www.boe.es}
-      - BOE_CONSOLIDADA_BASE_URL=${BOE_CONSOLIDADA_BASE_URL:-https://www.boe.es/datosabiertos/api/legislacion-consolidada}
-      - BOE_API_TIMEOUT=${BOE_API_TIMEOUT:-30}
-      - BOE_SYNC_PARALLEL_WORKERS=${BOE_SYNC_PARALLEL_WORKERS:-2}
-      - BOE_CONSOLIDADA_INDICE_PATH_TEMPLATE=${BOE_CONSOLIDADA_INDICE_PATH_TEMPLATE:-{base}/id/{id_norma}/texto/indice}
-      - BOE_CONSOLIDADA_BLOQUE_PATH_TEMPLATE=${BOE_CONSOLIDADA_BLOQUE_PATH_TEMPLATE:-{base}/id/{id_norma}/texto/bloque/{id_bloque}}
-      - AIRFLOW_CONN_BOE_POSTGRES=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-boe_legislation}
-      - AIRFLOW_CONN_POSTGRES_DEFAULT=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-boe_legislation}
-    volumes:
-      - ./airflow/dags:/opt/airflow/dags
-      - ./airflow/logs:/opt/airflow/logs
-      - ./airflow/plugins:/opt/airflow/plugins
-      - ./airflow/config:/opt/airflow/config
-      - ./data:/opt/airflow/data
-    ports:
-      - "${AIRFLOW_WEBSERVER_PORT:-8080}:8080"
-    command: webserver
-    healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      test: ["CMD", "ollama", "list"]
       interval: 30s
       timeout: 10s
-      retries: 5
-    networks:
-      - boe-network
+      retries: 3
+      start_period: 10s
 
-  # Airflow Scheduler
-  airflow-scheduler:
-    build:
-      context: ./airflow
-      dockerfile: Dockerfile
-    container_name: boe-airflow-scheduler
-    depends_on:
-      airflow-postgres:
-        condition: service_healthy
-      airflow-init:
-        condition: service_completed_successfully
-    environment:
-      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
-      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${AIRFLOW_POSTGRES_USER:-airflow}:${AIRFLOW_POSTGRES_PASSWORD:-airflow}@airflow-postgres:5432/${AIRFLOW_POSTGRES_DB:-airflow}
-      - AIRFLOW__CORE__FERNET_KEY=${AIRFLOW_FERNET_KEY}
-      - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=true
-      - AIRFLOW__CORE__LOAD_EXAMPLES=false
-      - POSTGRES_HOST=postgres
-      - POSTGRES_PORT=5432
-      - POSTGRES_USER=${POSTGRES_USER:-postgres}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
-      - POSTGRES_DB=${POSTGRES_DB:-boe_legislation}
-      - QDRANT_HOST=qdrant
-      - QDRANT_PORT=6333
-      - QDRANT_COLLECTION_HIST=${QDRANT_COLLECTION_HIST:-boe_historico_all}
-      - QDRANT_COLLECTION_VIG=${QDRANT_COLLECTION_VIG:-boe_vigente_latest}
-      - OLLAMA_HOST=ollama
-      - OLLAMA_PORT=11434
-      - BOE_API_BASE_URL=${BOE_API_BASE_URL:-https://www.boe.es}
-      - BOE_CONSOLIDADA_BASE_URL=${BOE_CONSOLIDADA_BASE_URL:-https://www.boe.es/datosabiertos/api/legislacion-consolidada}
-      - BOE_API_TIMEOUT=${BOE_API_TIMEOUT:-30}
-      - BOE_SYNC_PARALLEL_WORKERS=${BOE_SYNC_PARALLEL_WORKERS:-2}
-      - BOE_CONSOLIDADA_INDICE_PATH_TEMPLATE=${BOE_CONSOLIDADA_INDICE_PATH_TEMPLATE:-{base}/id/{id_norma}/texto/indice}
-      - BOE_CONSOLIDADA_BLOQUE_PATH_TEMPLATE=${BOE_CONSOLIDADA_BLOQUE_PATH_TEMPLATE:-{base}/id/{id_norma}/texto/bloque/{id_bloque}}
-      - AIRFLOW_CONN_BOE_POSTGRES=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-boe_legislation}
-      - AIRFLOW_CONN_POSTGRES_DEFAULT=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-boe_legislation}
-    volumes:
-      - ./airflow/dags:/opt/airflow/dags
-      - ./airflow/logs:/opt/airflow/logs
-      - ./airflow/plugins:/opt/airflow/plugins
-      - ./airflow/config:/opt/airflow/config
-      - ./data:/opt/airflow/data
-    command: scheduler
-    healthcheck:
-      test: ["CMD", "airflow", "jobs", "check", "--job-type", "SchedulerJob", "--hostname", "$${HOSTNAME}"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    networks:
-      - boe-network
-
-  # Airflow Init - Initialize the Airflow database
-  airflow-init:
-    build:
-      context: ./airflow
-      dockerfile: Dockerfile
-    container_name: boe-airflow-init
-    depends_on:
-      airflow-postgres:
-        condition: service_healthy
-    environment:
-      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
-      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${AIRFLOW_POSTGRES_USER:-airflow}:${AIRFLOW_POSTGRES_PASSWORD:-airflow}@airflow-postgres:5432/${AIRFLOW_POSTGRES_DB:-airflow}
-      - AIRFLOW__CORE__FERNET_KEY=${AIRFLOW_FERNET_KEY}
-      - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=true
-      - AIRFLOW__CORE__LOAD_EXAMPLES=false
-      - _AIRFLOW_DB_MIGRATE=true
-      - _AIRFLOW_WWW_USER_CREATE=true
-      - _AIRFLOW_WWW_USER_USERNAME=${AIRFLOW_WWW_USER_USERNAME:-admin}
-      - _AIRFLOW_WWW_USER_PASSWORD=${AIRFLOW_WWW_USER_PASSWORD:-admin}
-      - POSTGRES_HOST=postgres
-      - POSTGRES_PORT=5432
-      - POSTGRES_USER=${POSTGRES_USER:-postgres}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
-      - POSTGRES_DB=${POSTGRES_DB:-boe_legislation}
-      - AIRFLOW_CONN_POSTGRES_DEFAULT=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-boe_legislation}
-    volumes:
-      - ./airflow/dags:/opt/airflow/dags
-      - ./airflow/logs:/opt/airflow/logs
-      - ./airflow/plugins:/opt/airflow/plugins
-    command: version
-    networks:
-      - boe-network
-
-  # RAG API - FastAPI service for RAG queries
   rag-api:
     build:
-      context: ./rag-api
-      dockerfile: Dockerfile
-    container_name: boe-rag-api
-    depends_on:
-      postgres:
-        condition: service_healthy
-      qdrant:
-        condition: service_healthy
-      ollama:
-        condition: service_healthy
+      context: .
+      dockerfile: docker/Dockerfile.api
+    env_file:
+      - .env
     environment:
-      - POSTGRES_HOST=postgres
-      - POSTGRES_PORT=5432
-      - POSTGRES_USER=${POSTGRES_USER:-postgres}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
-      - POSTGRES_DB=${POSTGRES_DB:-boe_legislation}
-      - QDRANT_HOST=qdrant
-      - QDRANT_PORT=6333
-      - QDRANT_COLLECTION_NAME=${QDRANT_COLLECTION_NAME:-boe_legislation}
-      - QDRANT_COLLECTION_HIST=${QDRANT_COLLECTION_HIST:-boe_historico_all}
-      - QDRANT_COLLECTION_VIG=${QDRANT_COLLECTION_VIG:-boe_vigente_latest}
-      - OLLAMA_HOST=ollama
-      - OLLAMA_PORT=11434
-      - OLLAMA_EMBEDDING_MODEL=${OLLAMA_EMBEDDING_MODEL:-nomic-embed-text}
-      - OLLAMA_GENERATION_MODEL=${OLLAMA_GENERATION_MODEL:-llama3.2}
-    volumes:
-      - ./rag-api/app:/app
+      HOST: 0.0.0.0
+      PORT: 3000
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      MONGO_URL: ${MONGO_URL:-mongodb://mongodb:27017/boe}
+      QDRANT_URL: ${QDRANT_URL:-http://qdrant:6333}
+      QDRANT_COLLECTION: ${QDRANT_COLLECTION:-boe_chunks}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}
+      RAG_LLM_BASE_URL: ${RAG_LLM_BASE_URL:-http://ollama:11434}
+      RAG_LLM_MODEL: ${RAG_LLM_MODEL:-qwen2.5:7b-instruct}
+      RAG_ANSWER_TOP_UNIDADES: ${RAG_ANSWER_TOP_UNIDADES:-5}
+      RAG_ANSWER_MAX_UNIDAD_CHARS: ${RAG_ANSWER_MAX_UNIDAD_CHARS:-6000}
+    depends_on:
+      - mongodb
+      - redis
+      - qdrant
+      - ollama
     ports:
-      - "${RAG_API_PORT:-8000}:8000"
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    networks:
-      - boe-network
+      - "3000:3000"
+    restart: unless-stopped
+
+  web-ui:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.web-ui
+      args:
+        VITE_RAG_API_URL: ${VITE_RAG_API_URL:-http://localhost:3000}
+    depends_on:
+      - rag-api
+    ports:
+      - "5173:80"
+    restart: unless-stopped
+
+  worker-orchestrator:
+    <<: *pipeline-common
+    command: ["node", "packages/pipeline/dist/workers/worker-orchestrator.js"]
+
+  worker-sync:
+    <<: *pipeline-common
+    command: ["node", "packages/pipeline/dist/workers/worker-sync.js"]
+
+  worker-build:
+    <<: *pipeline-common
+    command: ["node", "packages/pipeline/dist/workers/worker-build.js"]
+
+  worker-index:
+    <<: *pipeline-common
+    command: ["node", "packages/pipeline/dist/workers/worker-index.js"]
+
+  scheduler-seeder:
+    <<: *pipeline-common
+    command: ["node", "packages/pipeline/dist/index.js", "backfill", "--wait"]
+
+  bull-board:
+    <<: *pipeline-common
+    command: ["node", "packages/pipeline/dist/board.js"]
+    ports:
+      - "3100:3100"
+
+  ingestor:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.ingestor
+    profiles: ["pipeline-legacy"]
+    env_file:
+      - .env
+    environment:
+      MONGO_URL: ${MONGO_URL:-mongodb://mongodb:27017/boe}
+      MONGO_URI: ${MONGO_URI:-mongodb://mongodb:27017}
+      MONGO_DB: ${MONGO_DB:-boe}
+    depends_on:
+      - mongodb
+    volumes:
+      - ./data:/app/data
+
+  builder:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.builder
+    profiles: ["pipeline-legacy"]
+    env_file:
+      - .env
+    environment:
+      MONGO_URL: ${MONGO_URL:-mongodb://mongodb:27017/boe}
+      MONGO_URI: ${MONGO_URI:-mongodb://mongodb:27017}
+      MONGO_DB: ${MONGO_DB:-boe}
+    depends_on:
+      - mongodb
+    volumes:
+      - ./data:/app/data
+
+  indexer:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.indexer
+    profiles: ["pipeline-legacy"]
+    env_file:
+      - .env
+    environment:
+      MONGO_URL: ${MONGO_URL:-mongodb://mongodb:27017/boe}
+      MONGO_URI: ${MONGO_URI:-mongodb://mongodb:27017}
+      MONGO_DB: ${MONGO_DB:-boe}
+      QDRANT_URL: ${QDRANT_URL:-http://qdrant:6333}
+      QDRANT_COLLECTION: ${QDRANT_COLLECTION:-boe_chunks}
+      LOCAL_EMBEDDINGS_URL: ${LOCAL_EMBEDDINGS_URL:-http://ollama:11434/api/embeddings}
+    depends_on:
+      - mongodb
+      - qdrant
+      - ollama
+    volumes:
+      - ./data:/app/data
 
 volumes:
-  postgres_data:
-    driver: local
+  mongo_data:
+  redis_data:
   qdrant_data:
-    driver: local
   ollama_data:
-    driver: local
-  airflow_postgres_data:
-    driver: local
-
-networks:
-  boe-network:
-    driver: bridge

@@ -1,0 +1,26 @@
+{
+  "name": "@boe/builder",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/index.ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@boe/core": "workspace:*",
+    "commander": "^13.1.0",
+    "dotenv": "^16.4.7",
+    "mongodb": "^7.1.0",
+    "p-limit": "^6.2.0",
+    "pino": "^9.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.13",
+    "tsx": "^4.19.2",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}

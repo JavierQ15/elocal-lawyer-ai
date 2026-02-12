@@ -1,0 +1,20 @@
+FROM node:24-slim AS build
+WORKDIR /repo
+
+RUN corepack enable
+
+COPY .npmrc package.json pnpm-workspace.yaml pnpm-lock.yaml tsconfig.base.json ./
+COPY packages ./packages
+
+RUN pnpm install --frozen-lockfile
+RUN pnpm --filter @boe/builder... build
+RUN pnpm deploy --filter @boe/builder --prod /app
+
+FROM node:24-slim AS runtime
+WORKDIR /app
+ENV NODE_ENV=production
+
+COPY --from=build /app /app
+
+ENTRYPOINT ["node", "dist/index.js"]
+CMD ["build-chunks", "--all"]

@@ -1,0 +1,8 @@
+node_modules
+dist
+validator/node_modules
+data
+.git
+.gitignore
+npm-debug.log*
+pnpm-debug.log*

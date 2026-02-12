@@ -1,0 +1,19 @@
+{
+  "name": "elocal-ia-boe-v2",
+  "private": true,
+  "version": "1.0.0",
+  "packageManager": "pnpm@10.29.3",
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "dev:api": "pnpm --filter @boe/rag-api dev",
+    "dev:web": "pnpm --filter @boe/web-ui dev",
+    "dev:ingestor": "pnpm --filter @boe/ingestor dev",
+    "dev:builder": "pnpm --filter @boe/builder dev",
+    "dev:indexer": "pnpm --filter @boe/indexer dev",
+    "pipeline:backfill": "pnpm --filter @boe/pipeline exec node dist/index.js backfill",
+    "pipeline:resume": "pnpm --filter @boe/pipeline exec node dist/index.js resume",
+    "pipeline:stop": "pnpm --filter @boe/pipeline exec node dist/index.js stop",
+    "pipeline:stats": "pnpm --filter @boe/pipeline exec node dist/index.js stats"
+  }
+}

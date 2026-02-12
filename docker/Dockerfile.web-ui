@@ -1,0 +1,23 @@
+FROM node:24-slim AS build
+WORKDIR /repo
+
+RUN corepack enable
+
+COPY .npmrc package.json pnpm-workspace.yaml pnpm-lock.yaml tsconfig.base.json ./
+COPY packages ./packages
+
+ARG VITE_RAG_API_URL=http://localhost:3000
+ENV VITE_RAG_API_URL=$VITE_RAG_API_URL
+
+RUN pnpm install --frozen-lockfile
+RUN pnpm --filter @boe/web-ui... build
+
+FROM nginx:1.27-alpine AS runtime
+WORKDIR /usr/share/nginx/html
+
+COPY docker/nginx.web-ui.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /repo/packages/web-ui/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

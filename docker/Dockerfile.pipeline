@@ -1,0 +1,23 @@
+﻿FROM node:24-slim AS build
+WORKDIR /repo
+
+RUN corepack enable
+
+COPY .npmrc package.json pnpm-workspace.yaml pnpm-lock.yaml tsconfig.base.json ./
+COPY packages ./packages
+
+RUN pnpm install --frozen-lockfile
+RUN pnpm --filter @boe/pipeline... build
+RUN pnpm --filter @boe/ingestor... build
+RUN pnpm --filter @boe/builder... build
+RUN pnpm --filter @boe/indexer... build
+
+FROM node:24-slim AS runtime
+WORKDIR /repo
+ENV NODE_ENV=production
+
+RUN corepack enable
+
+COPY --from=build /repo /repo
+
+CMD ["node", "packages/pipeline/dist/index.js", "stats"]

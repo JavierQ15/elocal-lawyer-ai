@@ -1,0 +1,9 @@
+# Override para ejecutar Ollama solo en CPU (sin GPU)
+# Usar con: docker compose -f docker-compose.yml -f docker-compose.cpu.yml up -d ollama
+
+services:
+  ollama:
+    deploy:
+      resources:
+        reservations:
+          devices: []

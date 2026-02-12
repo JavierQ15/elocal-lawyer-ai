@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src"
+  },
+  "include": [
+    "src/index.ts",
+    "src/services.ts",
+    "src/commands/discover.ts",
+    "src/commands/sync.ts"
+  ],
+  "exclude": ["dist", "node_modules"]
+}

@@ -1,0 +1,36 @@
+{
+  "name": "@boe/core",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./*": "./dist/*.js"
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*"
+      ]
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@qdrant/js-client-rest": "^1.16.2",
+    "axios": "^1.9.0",
+    "fast-xml-parser": "^4.5.1",
+    "mongodb": "^7.1.0",
+    "p-limit": "^6.2.0",
+    "pino": "^9.6.0",
+    "xml-formatter": "^3.6.6"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.13",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}
